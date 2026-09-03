@@ -167,7 +167,7 @@ AutoCodeBar 走短信来源。如果你使用 iPhone 镜像，iPhone 的通知�
 | `mise run verify` | 构建、测试、检查本地化与发布配置并组装 App |
 | `./script/build_and_run.sh` | 不用 mise 时的开发入口：组装、签名并启动 |
 | `./script/build_and_run.sh --install` | 安装到 Applications 并启动 |
-| `./script/build_and_run.sh --logs` | 启动并跟随应用日志（subsystem `dev.qiuzezheng.AutoCodeBar`） |
+| `./script/build_and_run.sh --logs` | 启动并跟随应用日志 |
 | `./script/build_and_run.sh --debug` | debug 构建并用 lldb 启动 |
 | `./script/build_and_run.sh --verify` | 构建、启动并确认进程存活 |
 | `swift script/make_icon_artwork.swift Resources/AppIcon.png` | 程序化重绘图标主稿 |

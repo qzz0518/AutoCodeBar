@@ -7,17 +7,17 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
         <title>AutoCodeBar</title>
         <item>
             <title>2.0.1</title>
-            <pubDate>Fri, 04 Sep 2026 06:28:36 +0900</pubDate>
+            <pubDate>Fri, 04 Sep 2026 06:29:45 +0900</pubDate>
             <sparkle:version>2</sparkle:version>
             <sparkle:shortVersionString>2.0.1</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <sparkle:releaseNotesLink sparkle:edSignature="Dm2C2wgLLKu7EEBCX5LIgOuA8h6+KmkssmBr9qmqCSpSKnWR1NUgsKawv7Pvz5T6aT1ZC7xjEMzF9gw3jLguCg==" sparkle:length="928">https://qzz0518.github.io/AutoCodeBar/AutoCodeBar-2.0.1.md</sparkle:releaseNotesLink>
-            <sparkle:releaseNotesLink xml:lang="zh" sparkle:edSignature="f1BuHWS6VU4ftX0447qLFtL+RF+edsRkLMR3PUGNIHKTHS4AKP70wUdNTyt9QIxwp5GZT6QUdVbYkNxTHZXEDw==" sparkle:length="929">https://qzz0518.github.io/AutoCodeBar/AutoCodeBar-2.0.1.zh.md</sparkle:releaseNotesLink>
+            <sparkle:releaseNotesLink sparkle:edSignature="JSKVBDZJ+sr/XZ1ZTLc4ilYuQFwJJWsYlzw8kwzFlwaWfDPd7+CKA9JzhV0QfR2ik+uiPV0K9mHj4FQgNgmEAQ==" sparkle:length="929">https://qzz0518.github.io/AutoCodeBar/AutoCodeBar-2.0.1.md</sparkle:releaseNotesLink>
+            <sparkle:releaseNotesLink xml:lang="zh" sparkle:edSignature="MCs3OYeBT0PBxcanc3jpcOVvWl7SWZK73yz2r0Ux8StK8xT3hVhB2DqKBqycff8p49OaEV8vg5ymEGf/tI7+Bw==" sparkle:length="914">https://qzz0518.github.io/AutoCodeBar/AutoCodeBar-2.0.1.zh.md</sparkle:releaseNotesLink>
             <enclosure url="https://github.com/qzz0518/AutoCodeBar/releases/download/v2.0.1/AutoCodeBar-2.0.1.dmg" length="2759035" type="application/octet-stream" sparkle:edSignature="78Gs0LLhjwkB+cpi4W8UB4eKruauwXnUig5DYpqpBHbrZjY9qPUPjvb4ebX0YncR43LciZRN8KgvmxarncKyDQ=="/>
         </item>
         <item>
             <title>2.0.0</title>
-            <pubDate>Fri, 04 Sep 2026 06:28:36 +0900</pubDate>
+            <pubDate>Fri, 04 Sep 2026 06:29:45 +0900</pubDate>
             <sparkle:version>1</sparkle:version>
             <sparkle:shortVersionString>2.0.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
@@ -28,6 +28,6 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
     </channel>
 </rss>
 <!-- sparkle-signatures:
-edSignature: DF+sjMWMXITE+B13NcFSjeLnXGvHcRNCvD+6xX5kuTXoqf8Ns1+ZDifUVVVb87Qy/Ji2O/r69dikVscKY8G9Aw==
+edSignature: CPQSsWyKYYeRPYUBu/KAILN66gsGa+h6AQQ/f7t1oQG8hYRjzNzOsho9Pq5IE5zTWEIkd+pleNt2xdvAUk6kAA==
 length: 2707
 -->

@@ -188,7 +188,7 @@ The project is a SwiftPM package with two targets: `AutoCodeBarCore` (pure logic
 | `mise run verify` | Build, test, validate localizations and release metadata, and assemble the app |
 | `./script/build_and_run.sh` | Development entry point without mise: assemble, sign, and launch |
 | `./script/build_and_run.sh --install` | Install into Applications and launch |
-| `./script/build_and_run.sh --logs` | Launch and follow the app log (subsystem `dev.qiuzezheng.AutoCodeBar`) |
+| `./script/build_and_run.sh --logs` | Launch and follow the app log |
 | `./script/build_and_run.sh --debug` | Debug build launched under lldb |
 | `./script/build_and_run.sh --verify` | Build, launch, and confirm the process stays alive |
 | `swift script/make_icon_artwork.swift Resources/AppIcon.png` | Redraw the icon artwork programmatically |
