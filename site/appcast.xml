@@ -6,6 +6,16 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
     <channel>
         <title>AutoCodeBar</title>
         <item>
+            <title>2.0.2</title>
+            <pubDate>Fri, 04 Sep 2026 06:34:27 +0900</pubDate>
+            <sparkle:version>3</sparkle:version>
+            <sparkle:shortVersionString>2.0.2</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink sparkle:edSignature="TO2l4KuObMzBFZqocChy+mrmeBzz4LZhr/x37CorpsAiUovzQi7768hK8z3jYX352NI686BD4LoD301SldTNDg==" sparkle:length="857">https://qzz0518.github.io/AutoCodeBar/AutoCodeBar-2.0.2.md</sparkle:releaseNotesLink>
+            <sparkle:releaseNotesLink xml:lang="zh" sparkle:edSignature="lqRZUhANDb55hjC1WRJzb1kApDkHrRFrHbBhZzbELWiKGEx04Rp0BE8oy4X93kaUNhXP8baSpRAzOCwzfCBNBQ==" sparkle:length="783">https://qzz0518.github.io/AutoCodeBar/AutoCodeBar-2.0.2.zh.md</sparkle:releaseNotesLink>
+            <enclosure url="https://github.com/qzz0518/AutoCodeBar/releases/download/v2.0.2/AutoCodeBar-2.0.2.dmg" length="2759031" type="application/octet-stream" sparkle:edSignature="FUmlHiBJiqwQT3g9RfekEbnYLlxOeXvbkb6cxLvTWYfphWe+cQxYiKeAg1muB4v2IjIAZN0qyhqmpov9N5YZCA=="/>
+        </item>
+        <item>
             <title>2.0.1</title>
             <pubDate>Fri, 04 Sep 2026 06:29:45 +0900</pubDate>
             <sparkle:version>2</sparkle:version>
@@ -28,6 +38,6 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
     </channel>
 </rss>
 <!-- sparkle-signatures:
-edSignature: CPQSsWyKYYeRPYUBu/KAILN66gsGa+h6AQQ/f7t1oQG8hYRjzNzOsho9Pq5IE5zTWEIkd+pleNt2xdvAUk6kAA==
-length: 2707
+edSignature: EytmvYGo9xhKom2dsMHGi2A6PTJfbYTt+e1SD8r6HOdXCjeMfLgB4FaOCBtM5QZUQNtnUCW1HbralcnqqVg7Dw==
+length: 3842
 -->

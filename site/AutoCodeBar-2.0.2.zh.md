@@ -1,3 +1,6 @@
+<!-- sparkle-sign-warning:
+IMPORTANT: This file was signed by Sparkle. Any modifications to this file requires updating signatures in appcasts that reference this file! This will involve re-running generate_appcast or sign_update.
+-->
 应用标识改为 cc.zerah.AutoCodeBar，并去掉日志与说明里的个人信息。
 
 - **新的应用标识**：macOS 会把它视为一个新应用，首次启动后请在「隐私与安全性 › 完整磁盘访问」重新加入 AutoCodeBar，面板里的引导卡片会带你完成。
