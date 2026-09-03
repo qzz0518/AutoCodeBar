@@ -76,6 +76,8 @@ check, which you can turn off.
 brew install --cask qzz0518/tap/autocodebar
 ```
 
+Since Homebrew 6, third-party taps must be trusted: installing by the fully qualified name above trusts only this cask. To use the short name `autocodebar` later, run `brew tap qzz0518/tap` and `brew trust --cask qzz0518/tap/autocodebar` first.
+
 To update later:
 
 ```bash

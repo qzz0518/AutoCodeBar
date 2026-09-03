@@ -61,6 +61,8 @@ AutoCodeBar 常驻菜单栏，监听本机「信息」和「邮件」的新内�
 brew install --cask qzz0518/tap/autocodebar
 ```
 
+Homebrew 6 起第三方 tap 需要信任：用上面的完整名称安装时只会信任这一个 cask；若想之后用短名 `autocodebar`，先执行 `brew tap qzz0518/tap` 与 `brew trust --cask qzz0518/tap/autocodebar`。
+
 后续更新使用：
 
 ```bash
