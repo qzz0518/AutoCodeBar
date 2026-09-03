@@ -1,0 +1,19 @@
+<?xml version="1.0" standalone="yes"?><!-- sparkle-sign-warning:
+IMPORTANT: This file was signed by Sparkle. Any modifications to this file requires re-signing this file with generate_appcast or sign_update! The signed signature will be embedded at the end of this file.
+--><rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
+    <channel>
+        <title>AutoCodeBar</title>
+        <item>
+            <title>2.0.0</title>
+            <pubDate>Fri, 04 Sep 2026 05:51:57 +0900</pubDate>
+            <sparkle:version>1</sparkle:version>
+            <sparkle:shortVersionString>2.0.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink sparkle:edSignature="BixiJTiLHCUAAeNbtUFpN4SlPb1Iwe9HxA1bNWUQ/BQtsRLLU47LNHdA2bCN0+yhKAdd9ZDPgmNag1OBUpD0Aw==" sparkle:length="4333">https://qzz0518.github.io/AutoCodeBar/AutoCodeBar-2.0.0.md</sparkle:releaseNotesLink>
+            <enclosure url="https://github.com/qzz0518/AutoCodeBar/releases/download/v2.0.0/AutoCodeBar-2.0.0.dmg" length="2744641" type="application/octet-stream" sparkle:edSignature="jlNBzPYmIC7/f3A9CVro3cd/SMW/89XZuPhiQ7pErbOb2uS2SlCnZ3D8F7RH45Rp7Ol0ctO6SlHZbleTdJwLBA=="></enclosure>
+        </item>
+    </channel>
+</rss><!-- sparkle-signatures:
+edSignature: rQrs3I+f9AhauQg4K55w8CutzlDLXyhbdYf3qmbgVPpfPOJ1LgMoT+MQmKkL99zzuj9jikdL58vVCFY0ma4WBA==
+length: 1306
+-->
