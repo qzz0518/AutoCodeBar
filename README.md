@@ -55,6 +55,25 @@ AutoCodeBar 常驻菜单栏，监听本机「信息」和「邮件」的新内�
 - 短信来源需要在 iPhone 上开启「短信转发」到这台 Mac，或本机已登录 iMessage
 - 邮件来源需要 Apple Mail 已配置账户并在本机同步邮件
 
+### Homebrew
+
+```bash
+brew install --cask qzz0518/tap/autocodebar
+```
+
+后续更新使用：
+
+```bash
+brew upgrade --cask autocodebar
+```
+
+### DMG 安装
+
+前往 [Releases](https://github.com/qzz0518/AutoCodeBar/releases) 下载最新的 `AutoCodeBar-*.dmg`，
+打开后将 AutoCodeBar 拖入 Applications。应用内的 Sparkle 会自动检查后续更新。
+
+Homebrew 与 Releases 使用同一份经过 Developer ID 签名和 Apple 公证的 Universal 2 DMG。
+
 ### 从源码构建
 
 需要 Xcode 26 或对应的 Command Line Tools（Swift 6.0+）：

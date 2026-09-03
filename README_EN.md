@@ -70,6 +70,25 @@ check, which you can turn off.
 - The SMS source needs Text Message Forwarding enabled from your iPhone to this Mac, or iMessage signed in
 - The Mail source needs Apple Mail configured with an account that syncs mail to this Mac
 
+### Homebrew
+
+```bash
+brew install --cask qzz0518/tap/autocodebar
+```
+
+To update later:
+
+```bash
+brew upgrade --cask autocodebar
+```
+
+### Install from DMG
+
+Download the latest `AutoCodeBar-*.dmg` from [Releases](https://github.com/qzz0518/AutoCodeBar/releases),
+open it, and drag AutoCodeBar into Applications. Sparkle inside the app checks for later updates.
+
+Homebrew and Releases ship the same Developer ID-signed, Apple-notarized Universal 2 DMG.
+
 ### Build from Source
 
 Requires Xcode 26 or the matching Command Line Tools (Swift 6.0+):
