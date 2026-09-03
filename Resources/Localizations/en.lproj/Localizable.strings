@@ -125,6 +125,12 @@
 "需要完整磁盘访问。" = "Full Disk Access is required.";
 "短信和邮件都需要「完整磁盘访问」。授权后如仍显示未授权，请重新启动应用。" = "SMS and Mail both need Full Disk Access. If it still shows as missing after you grant it, relaunch the app.";
 "忽略这些应用的通知" = "Ignore notifications from these apps";
+"添加应用" = "Add App";
+"运行中的应用程序" = "Running Applications";
+"手动从访达中选择…" = "Choose from Finder…";
+"不忽略任何应用" = "No apps are ignored";
+"移除" = "Remove";
+"恢复默认" = "Restore Defaults";
 "默认忽略 Telegram，避免聊天内容误触发。AutoCodeBar 自身的通知始终忽略。" = "Telegram is ignored by default so chat messages cannot trigger a match. AutoCodeBar always ignores its own notifications.";
 
 /* Settings: Rules */

@@ -273,6 +273,57 @@ final class AppState {
     settings.codePattern = AppSettings.defaultCodePattern
   }
 
+  // MARK: - 忽略的应用
+
+  /// 自身的通知永远被过滤掉，把它列进忽略列表只会占一行还删不掉。
+  var ownBundleIdentifier: String {
+    (Bundle.main.bundleIdentifier ?? "cc.zerah.AutoCodeBar").lowercased()
+  }
+
+  /// 追加若干 Bundle ID。整张列表顺手归一化：Bundle ID 不区分大小写，
+  /// 同一个应用换个写法混进来就会在界面上出现两行，而管线只认得一行。
+  func addIgnoredApps(_ bundleIdentifiers: [String]) {
+    let merged = normalizedIgnoredApps(settings.ignoredNotificationApps + bundleIdentifiers)
+    guard merged != settings.ignoredNotificationApps else {
+      return
+    }
+    settings.ignoredNotificationApps = merged
+  }
+
+  func removeIgnoredApp(_ bundleIdentifier: String) {
+    let target = bundleIdentifier.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+    let kept = settings.ignoredNotificationApps.filter {
+      $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() != target
+    }
+    guard kept != settings.ignoredNotificationApps else {
+      return
+    }
+    settings.ignoredNotificationApps = kept
+  }
+
+  func restoreDefaultIgnoredApps() {
+    let defaults = normalizedIgnoredApps(AppSettings.defaultIgnoredNotificationApps)
+    guard defaults != settings.ignoredNotificationApps else {
+      return
+    }
+    settings.ignoredNotificationApps = defaults
+  }
+
+  /// 去空白、转小写、去掉自身、按首次出现的顺序去重。
+  private func normalizedIgnoredApps(_ bundleIdentifiers: [String]) -> [String] {
+    var seen = Set<String>()
+    var result: [String] = []
+    let own = ownBundleIdentifier
+    for raw in bundleIdentifiers {
+      let identifier = raw.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+      guard !identifier.isEmpty, identifier != own, seen.insert(identifier).inserted else {
+        continue
+      }
+      result.append(identifier)
+    }
+    return result
+  }
+
   // MARK: - 权限
 
   func refreshPermissions() {

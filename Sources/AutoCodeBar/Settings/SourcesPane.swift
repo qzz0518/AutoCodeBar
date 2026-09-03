@@ -11,7 +11,7 @@ struct SourcesPane: View {
         ForEach(SourceKind.allCases, id: \.self) { kind in
           SourceRow(state: state, kind: kind)
           if kind == .notificationCenter {
-            IgnoredAppsPanel(state: state)
+            IgnoredAppsList(state: state)
           }
         }
       }
@@ -74,61 +74,6 @@ private struct SourceRow: View {
         }
       case .off, .starting, .running:
         EmptyView()
-      }
-    }
-  }
-}
-
-/// 通知忽略列表。本地缓存文本，300ms 防抖后写回设置，
-/// 否则每敲一个字都会重排行，连换行都打不出来。
-private struct IgnoredAppsPanel: View {
-  let state: AppState
-
-  @State private var text = ""
-  @State private var didLoad = false
-  @State private var commitTask: Task<Void, Never>?
-
-  var body: some View {
-    Panel {
-      VStack(alignment: .leading, spacing: 8) {
-        Text(L10n.text("忽略这些应用的通知"))
-          .font(Theme.heading)
-          .foregroundStyle(Theme.ink)
-
-        FieldBox {
-          TextEditor(text: $text)
-            .font(.system(size: 11, design: .monospaced))
-            .frame(height: 104)
-            .scrollContentBackground(.hidden)
-        }
-
-        Text(L10n.text("默认忽略 Telegram，避免聊天内容误触发。AutoCodeBar 自身的通知始终忽略。"))
-          .font(Theme.caption)
-          .foregroundStyle(Theme.inkSecondary)
-          .fixedSize(horizontal: false, vertical: true)
-      }
-    }
-    .onAppear {
-      guard !didLoad else {
-        return
-      }
-      didLoad = true
-      text = state.settings.ignoredNotificationApps.joined(separator: "\n")
-    }
-    .onChange(of: text) { _, _ in
-      commitTask?.cancel()
-      commitTask = Task {
-        try? await Task.sleep(nanoseconds: 300_000_000)
-        guard !Task.isCancelled else {
-          return
-        }
-        let apps = text
-          .components(separatedBy: .newlines)
-          .map { $0.trimmingCharacters(in: .whitespaces) }
-          .filter { !$0.isEmpty }
-        if apps != state.settings.ignoredNotificationApps {
-          state.settings.ignoredNotificationApps = apps
-        }
       }
     }
   }

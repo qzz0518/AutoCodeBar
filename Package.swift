@@ -32,6 +32,10 @@ let package = Package(
     .testTarget(
       name: "AutoCodeBarCoreTests",
       dependencies: ["AutoCodeBarCore"]
+    ),
+    .testTarget(
+      name: "AutoCodeBarTests",
+      dependencies: ["AutoCodeBar"]
     )
   ],
   swiftLanguageModes: [.v5]
