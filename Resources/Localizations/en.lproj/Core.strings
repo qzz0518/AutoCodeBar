@@ -1,0 +1,44 @@
+/* Source names */
+"短信" = "SMS";
+"邮件" = "Mail";
+"通知" = "Notification";
+"短信 / iMessage" = "SMS / iMessage";
+"通知中心（实验）" = "Notification Center (Experimental)";
+"读取「信息」应用的本地数据库，覆盖转发到 Mac 的短信和 iMessage。" = "Reads the local Messages database, covering SMS forwarded to this Mac and iMessage.";
+"监听「邮件」应用本地存储的新邮件，支持纯文本和 HTML 邮件。" = "Watches new mail stored locally by Mail. Plain text and HTML are both supported.";
+"读取系统通知数据库，可覆盖 iPhone 镜像等其他应用的通知。系统版本更新后可能失效。" = "Reads the system notification database, which can cover iPhone Mirroring and other apps. A macOS update may break it.";
+
+/* Source status */
+"已关闭" = "Off";
+"启动中…" = "Starting…";
+"正在监听" = "Watching";
+"需要完整磁盘访问" = "Full Disk Access required";
+
+/* Watcher failures */
+"无法创建 FSEvents 监听" = "Cannot create the FSEvents stream";
+"FSEvents 启动失败" = "FSEvents failed to start";
+"未找到「邮件」数据目录" = "Mail data folder not found";
+"无法读取「邮件」数据目录" = "Cannot read the Mail data folder";
+"无法监听「邮件」目录" = "Cannot watch the Mail folder";
+"未找到「信息」数据库" = "Messages database not found";
+"无法监听「信息」目录" = "Cannot watch the Messages folder";
+"读取「信息」数据库失败" = "Reading the Messages database failed";
+"未找到系统通知数据库" = "System notification database not found";
+"无法监听系统通知数据库目录" = "Cannot watch the system notification database folder";
+"读取系统通知数据库失败" = "Reading the system notification database failed";
+"无法打开数据库" = "Cannot open the database";
+"SQL 编译失败" = "SQL compilation failed";
+"读取失败" = "Read failed";
+
+/* Sender */
+"未知发件人" = "Unknown sender";
+
+/* Relative time */
+"刚刚" = "Just now";
+"%d 分钟前" = "%d min ago";
+"HH:mm" = "HH:mm";
+"昨天 HH:mm" = "'Yesterday' HH:mm";
+"M月d日 HH:mm" = "MMM d, HH:mm";
+
+/* Self-posted notification filter */
+"已复制验证码" = "Copied code";

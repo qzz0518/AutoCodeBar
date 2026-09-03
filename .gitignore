@@ -1,0 +1,40 @@
+# Swift / SwiftPM
+.build/
+.swiftpm/
+
+# Build output
+dist/
+
+# Xcode, if anyone opens the package there
+*.xcodeproj
+*.xcworkspace
+xcuserdata/
+DerivedData/
+*.xcresult
+
+# macOS
+.DS_Store
+._*
+
+# Local tool state
+.codex/
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Signing material, should it ever be generated locally
+*.p12
+*.pem
+*.key
+*.cer
+*.p8
+
+# Local environment files
+.env
+.env.*
+!.env.example
+
+# Design notes and specs stay local
+/docs/

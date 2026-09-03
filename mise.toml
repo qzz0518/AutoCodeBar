@@ -1,0 +1,52 @@
+# The Swift toolchain comes from Xcode, which mise does not manage.
+[tools]
+
+[env]
+CONFIG = "debug"
+
+[tasks.build]
+description = "Build every target"
+run = "swift build"
+
+[tasks.test]
+description = "Run the extraction, parsing and pipeline suites"
+run = "swift test"
+
+[tasks.i18n]
+description = "Validate the Simplified Chinese and English string tables"
+run = "swift script/check_localizations.swift"
+
+[tasks.icon]
+description = "Redraw the app icon artwork and rebuild the .icns"
+run = """
+swift script/make_icon_artwork.swift Resources/AppIcon.png
+swift script/make_icon.swift Resources/AppIcon.png Resources/AppIcon.icns Resources/Screenshots/app-icon-rounded.png
+"""
+
+[tasks.dmg-background]
+description = "Regenerate the 760x520 Retina Finder background for the disk image"
+run = "swift script/make_dmg_background.swift Resources/DMG/background.png"
+
+[tasks.bundle]
+description = "Assemble and sign a host-architecture dist/AutoCodeBar.app"
+run = "CONFIG=release script/make_app.sh"
+
+[tasks.bundle-universal]
+description = "Assemble and sign a Universal 2 dist/AutoCodeBar.app"
+run = "CONFIG=release ARCHS='arm64 x86_64' script/make_app.sh"
+
+[tasks.release-config]
+description = "Validate Sparkle and release metadata without using secrets"
+run = "script/check_release_config.sh"
+
+[tasks.release-dry-run]
+description = "Build a Developer ID-signed Universal 2 DMG without notarizing it"
+run = "REQUIRE_CLEAN=0 REQUIRE_TAG=0 NOTARIZE=0 GENERATE_APPCAST=0 script/release.sh"
+
+[tasks.release]
+description = "Build, notarize, staple and sign the tagged release feed"
+run = "script/release.sh"
+
+[tasks.verify]
+description = "Build, test, validate release metadata and assemble the bundle"
+depends = ["build", "test", "i18n", "release-config", "bundle"]

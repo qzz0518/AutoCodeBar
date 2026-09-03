@@ -1,0 +1,3 @@
+/* Bundle metadata shown by the Finder and the About panel */
+"CFBundleDisplayName" = "AutoCodeBar";
+"NSHumanReadableCopyright" = "Independent project. Not affiliated with Apple.";

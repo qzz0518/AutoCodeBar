@@ -1,0 +1,164 @@
+/* Shared actions and accessibility */
+"已完成" = "Done";
+"未完成" = "Not done";
+"第 %d 步，共 %d 步" = "Step %d of %d";
+"打开系统设置" = "Open System Settings";
+"打开设置" = "Open Settings";
+"打开通知设置" = "Open Notification Settings";
+"打开" = "Open";
+"允许…" = "Allow…";
+"重试" = "Retry";
+"重新启动" = "Relaunch";
+"重新启动应用" = "Relaunch App";
+"检查更新…" = "Check for Updates…";
+"完整磁盘访问" = "Full Disk Access";
+"通知" = "Notifications";
+"返回" = "Back";
+"继续" = "Continue";
+"完成" = "Done";
+"已复制" = "Copied";
+
+/* Menu bar popover */
+"正在监听" = "Watching";
+"已暂停" = "Paused";
+"需要授权" = "Permission needed";
+"无法监听" = "Not watching";
+"未启用来源" = "No sources enabled";
+"启动中…" = "Starting…";
+"点击右侧按钮恢复" = "Click the button to resume";
+"授予完整磁盘访问后自动恢复" = "Waiting for Full Disk Access";
+"所有来源都启动失败" = "Every source failed to start";
+"在设置中开启至少一个来源" = "Turn on a source in Settings";
+"恢复监听" = "Resume Watching";
+"暂停监听" = "Pause Watching";
+"设置…" = "Settings…";
+"关于 AutoCodeBar" = "About AutoCodeBar";
+"退出" = "Quit";
+"更多" = "More";
+"最近验证码" = "Recent Codes";
+"清空" = "Clear";
+"复制" = "Copy";
+"从历史中移除" = "Remove from History";
+"还没有验证码" = "No codes yet";
+"收到短信或邮件里的验证码后，会自动复制到剪贴板并显示在这里。" = "When a code arrives by SMS or mail it is copied to the clipboard and listed here.";
+
+/* Popover attention card */
+"需要完整磁盘访问" = "Full Disk Access required";
+"来源启动失败" = "A source failed to start";
+"未启用任何来源" = "No sources enabled";
+"用于读取「信息」和「邮件」的本地数据，授权后自动恢复。" = "Needed to read local Messages and Mail data. Watching resumes as soon as it is granted.";
+"%@：%@" = "%@: %@";
+"到「设置 › 来源」开启短信或邮件。" = "Open Settings › Sources and turn on SMS or Mail.";
+
+/* Onboarding */
+"设置 AutoCodeBar" = "Set Up AutoCodeBar";
+"权限" = "Permissions";
+"跳过设置" = "Skip Setup";
+"验证码，自动到剪贴板。" = "Codes, straight to your clipboard.";
+"AutoCodeBar 在本机读取「信息」和「邮件」的新内容，识别出验证码后立即复制，并在菜单栏提醒你。识别全程在本机完成。" = "AutoCodeBar reads new items in Messages and Mail on this Mac, copies any verification code the moment it appears, and flags it in the menu bar. Recognition never leaves your Mac.";
+"短信与 iMessage" = "SMS & iMessage";
+"转发到 Mac 的短信，以及 iMessage。" = "SMS forwarded to this Mac, plus iMessage.";
+"邮件" = "Mail";
+"Apple Mail 收到的新邮件，纯文本或 HTML。" = "New mail in Apple Mail, plain text or HTML.";
+"直接粘贴" = "Paste right away";
+"复制完成即可 ⌘V。历史只留在内存。" = "Copied and ready for ⌘V. History stays in memory.";
+"开始设置" = "Get Started";
+"大约需要一分钟。" = "Takes about a minute.";
+"实时预览" = "Live Preview";
+"让 AutoCodeBar 读到验证码" = "Let AutoCodeBar see your codes";
+"没有完整磁盘访问，就没有东西可识别。macOS 只会问一次。" = "Without Full Disk Access there is nothing to read. macOS asks only once.";
+"识别验证码 — 必需" = "Detecting codes — required";
+"已可以读取「信息」与「邮件」的本地数据。" = "Local Messages and Mail data can now be read.";
+"读取「信息」与「邮件」本地数据所必需。" = "Required to read local Messages and Mail data.";
+"提醒 — 可选" = "Alerts — optional";
+"复制后显示一条横幅，可选。" = "Shows a banner after copying. Optional.";
+"如果已经加入列表但仍显示未授权，请重新启动 AutoCodeBar。" = "If AutoCodeBar is already in the list but still shows as missing, relaunch it.";
+"需要完整磁盘访问才能继续。" = "Full Disk Access is required to continue.";
+"准备就绪。" = "You’re all set.";
+"下一条验证码到达时会自动复制，菜单栏会显示它 15 秒。来源和识别规则随时可以在设置里调整。" = "The next code is copied automatically and stays in the menu bar for 15 seconds. Sources and rules can be changed in Settings at any time.";
+"菜单栏图标 › 齿轮 › 设置…" = "Menu bar icon › gear › Settings…";
+"通知未开启，复制后只会在菜单栏显示。" = "Notifications are off, so copies only show in the menu bar.";
+"AutoCodeBar 会读取什么" = "What AutoCodeBar Reads";
+"只读本机数据库" = "Local databases, read-only";
+"「信息」的 chat.db 和「邮件」的 .emlx 文件，只读打开，不修改。" = "The Messages chat.db and the Mail .emlx files, opened read-only and never modified.";
+"不上传数据" = "Nothing leaves your Mac";
+"没有服务器、没有统计；更新检查可以关闭。" = "No server, no analytics; the update check can be turned off.";
+"历史只在内存" = "History stays in memory";
+"最多 20 条，退出应用即清空；剪贴板写入带机密标记。" = "Up to 20 entries, cleared when the app quits. Clipboard writes are marked confidential.";
+
+/* Full Disk Access guide card */
+"把 **AutoCodeBar** 拖进上方列表，然后打开它的开关" = "Drag **AutoCodeBar** into the list above, then turn on its switch";
+"已授权 — macOS 可能会要求重新打开 AutoCodeBar。" = "Granted — macOS may ask you to reopen AutoCodeBar.";
+
+/* Settings shell */
+"通用" = "General";
+"来源" = "Sources";
+"规则" = "Rules";
+"关于" = "About";
+"已授权" = "Granted";
+"未授权" = "Not granted";
+
+/* Settings: General */
+"启动" = "Startup";
+"登录时自动启动" = "Launch at login";
+"开机后静默出现在菜单栏。" = "Appears quietly in the menu bar after you log in.";
+"复制后" = "After Copying";
+"显示系统通知" = "Show a system notification";
+"横幅显示验证码与来源。" = "The banner shows the code and where it came from.";
+"在菜单栏短暂显示验证码" = "Show the code in the menu bar";
+"约 15 秒后自动隐藏。" = "Hides itself after about 15 seconds.";
+"软件更新" = "Software Updates";
+"自动检查更新" = "Check for updates automatically";
+"每天检查一次，由 Sparkle 安全下载并安装。" = "Checks once a day. Sparkle downloads and installs securely.";
+"当前版本" = "Current version";
+"设置向导" = "Setup Guide";
+"重新运行设置向导" = "Run the setup guide again";
+"从权限开始重新走一遍。" = "Starts over from permissions.";
+"重新运行" = "Run Again";
+
+/* Settings: Sources */
+"数据来源" = "Sources";
+"已关闭" = "Off";
+"启动中" = "Starting";
+"不可用" = "Unavailable";
+"失败" = "Failed";
+"需要完整磁盘访问。" = "Full Disk Access is required.";
+"短信和邮件都需要「完整磁盘访问」。授权后如仍显示未授权，请重新启动应用。" = "SMS and Mail both need Full Disk Access. If it still shows as missing after you grant it, relaunch the app.";
+"忽略这些应用的通知" = "Ignore notifications from these apps";
+"默认忽略 Telegram，避免聊天内容误触发。AutoCodeBar 自身的通知始终忽略。" = "Telegram is ignored by default so chat messages cannot trigger a match. AutoCodeBar always ignores its own notifications.";
+
+/* Settings: Rules */
+"触发关键词" = "Trigger Keywords";
+"只有包含任一关键词的消息才会被识别，匹配不区分大小写，每行一个。" = "Only messages containing one of these keywords are scanned. Matching ignores case; one keyword per line.";
+"验证码格式" = "Code Format";
+"正则" = "Regular expression";
+"无法编译" = "Invalid";
+"正则有效" = "Valid";
+"匹配到的片段还需满足：4–8 个字母或数字，且至少包含 1 个数字。" = "A match must also be 4–8 letters or digits and contain at least one digit.";
+"测试" = "Test";
+"粘贴一条短信或邮件内容…" = "Paste a message or an email here…";
+"提取到 %@（关键词「%@」）" = "Found %@ (keyword “%@”)";
+"未识别到验证码" = "No code found";
+"恢复默认规则" = "Restore Defaults";
+
+/* Settings: Permissions */
+"系统权限" = "System Permissions";
+"读取「信息」数据库与「邮件」本地文件所必需。授权后 AutoCodeBar 自动恢复监听。" = "Required to read the Messages database and the local Mail files. AutoCodeBar resumes watching once it is granted.";
+"复制后显示横幅。" = "Shows a banner after copying.";
+"已允许" = "Allowed";
+"已拒绝" = "Denied";
+"未开启" = "Not enabled";
+"完整磁盘访问不会弹出系统授权框，需要手动把 AutoCodeBar 加入列表。若已加入仍显示未授权，请重新启动应用。" = "macOS never prompts for Full Disk Access, so AutoCodeBar has to be added to the list by hand. If it still shows as missing afterwards, relaunch the app.";
+
+/* Settings: About */
+"版本 %@ (%@)" = "Version %@ (%@)";
+"AutoCodeBar 做什么" = "What AutoCodeBar Does";
+"本机「信息」或「邮件」收到验证码时，AutoCodeBar 自动把它复制到剪贴板，并在菜单栏与通知里提醒你。所有识别都在本机完成，不连接任何服务器。" = "When a verification code arrives in Messages or Mail on this Mac, AutoCodeBar copies it to the clipboard and flags it in the menu bar and in a notification. Everything is detected on this Mac; no server is ever contacted.";
+"历史仅保存在内存中，最多 20 条，退出应用后清除。验证码写入剪贴板时会标记为机密内容，支持该标记的剪贴板管理器不会保存它。" = "History lives in memory only, holds at most 20 entries and is cleared when the app quits. Codes are written to the clipboard marked as confidential, so clipboard managers that honour the marker will not keep them.";
+"链接" = "Links";
+"源码与问题反馈" = "Source code and issues";
+"作者" = "Author";
+
+/* System notification */
+"已复制验证码 %@" = "Copied code %@";
+"来自 %@ · %@" = "From %@ · %@";
