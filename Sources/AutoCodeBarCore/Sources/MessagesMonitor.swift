@@ -18,8 +18,8 @@ public final class MessagesMonitor: SourceMonitor {
     """
 
   private let databaseURL: URL
-  private let queue = DispatchQueue(label: "dev.qiuzezheng.autocodebar.messages", qos: .utility)
-  private let logger = Logger(subsystem: "dev.qiuzezheng.AutoCodeBar", category: "messages")
+  private let queue = DispatchQueue(label: "cc.zerah.autocodebar.messages", qos: .utility)
+  private let logger = Logger(subsystem: "cc.zerah.AutoCodeBar", category: "messages")
 
   private var continuation: AsyncStream<SourceEvent>.Continuation?
   private var watcher: FSEventsWatcher?

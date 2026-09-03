@@ -9,8 +9,8 @@ public final class MailMonitor: SourceMonitor {
   private static let rememberInterval: TimeInterval = 600
 
   private let rootURL: URL
-  private let queue = DispatchQueue(label: "dev.qiuzezheng.autocodebar.mail", qos: .utility)
-  private let logger = Logger(subsystem: "dev.qiuzezheng.AutoCodeBar", category: "mail")
+  private let queue = DispatchQueue(label: "cc.zerah.autocodebar.mail", qos: .utility)
+  private let logger = Logger(subsystem: "cc.zerah.AutoCodeBar", category: "mail")
 
   private var continuation: AsyncStream<SourceEvent>.Continuation?
   private var watcher: FSEventsWatcher?

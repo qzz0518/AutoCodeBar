@@ -23,7 +23,7 @@ public final class CodePipeline {
     clipboard: Clipboard,
     deduplicator: Deduplicator = Deduplicator(),
     ignoredNotificationApps: [String] = AppSettings.defaultIgnoredNotificationApps,
-    ownBundleIdentifier: String = Bundle.main.bundleIdentifier ?? "dev.qiuzezheng.AutoCodeBar",
+    ownBundleIdentifier: String = Bundle.main.bundleIdentifier ?? "cc.zerah.AutoCodeBar",
     now: @escaping () -> Date = Date.init
   ) {
     self.extractor = extractor

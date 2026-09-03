@@ -5,7 +5,7 @@ set -euo pipefail
 
 MODE="${1:-run}"
 APP_NAME="AutoCodeBar"
-BUNDLE_ID="dev.qiuzezheng.AutoCodeBar"
+BUNDLE_ID="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/Resources/Info.plist")"
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 APP_BUNDLE="$ROOT_DIR/dist/$APP_NAME.app"

@@ -17,7 +17,7 @@ private struct Harness {
       clipboard: clipboard,
       deduplicator: Deduplicator(window: 300, now: now),
       ignoredNotificationApps: AppSettings.defaultIgnoredNotificationApps,
-      ownBundleIdentifier: "dev.qiuzezheng.AutoCodeBar",
+      ownBundleIdentifier: "cc.zerah.AutoCodeBar",
       now: now
     )
   }
@@ -89,7 +89,7 @@ struct CodePipelineTests {
     let harness = Harness()
     let candidate = harness.candidate(
       kind: .notificationCenter,
-      sender: "dev.qiuzezheng.autocodebar",
+      sender: "cc.zerah.autocodebar",
       text: "AutoCodeBar 验证码 482913"
     )
     #expect(harness.pipeline.handle(candidate) == nil)

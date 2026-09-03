@@ -12,8 +12,8 @@ public final class NotificationCenterMonitor: SourceMonitor {
     WHERE r.rec_id > ? ORDER BY r.rec_id ASC LIMIT 50;
     """
 
-  private let queue = DispatchQueue(label: "dev.qiuzezheng.autocodebar.notificationCenter", qos: .utility)
-  private let logger = Logger(subsystem: "dev.qiuzezheng.AutoCodeBar", category: "notificationCenter")
+  private let queue = DispatchQueue(label: "cc.zerah.autocodebar.notificationCenter", qos: .utility)
+  private let logger = Logger(subsystem: "cc.zerah.AutoCodeBar", category: "notificationCenter")
   private let overrideURL: URL?
 
   private var databaseURL: URL?
