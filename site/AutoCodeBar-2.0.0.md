@@ -1,12 +1,9 @@
 <!-- sparkle-sign-warning:
 IMPORTANT: This file was signed by Sparkle. Any modifications to this file requires updating signatures in appcasts that reference this file! This will involve re-running generate_appcast or sign_update.
 -->
-<p align="center">
-  <img src="https://raw.githubusercontent.com/qzz0518/AutoCodeBar/main/Resources/Screenshots/app-icon-rounded.png" width="96" alt="AutoCodeBar icon" />
-</p>
+# AutoCodeBar 2.0.0
 
-<h2 align="center">AutoCodeBar</h2>
-<p align="center">短信或邮件里的验证码，自动复制到剪贴板。</p>
+短信或邮件里的验证码，自动复制到剪贴板。
 
 ## 更新日志
 
@@ -54,6 +51,5 @@ The in-app guide card walks you through it.
 - Universal 2（Apple Silicon + Intel）
 - 已在 macOS 15.7 实机验证 / Hardware-verified on macOS 15.7
 
-> [!IMPORTANT]
 > AutoCodeBar 只在本机读取「信息」与「邮件」的本地数据，且只读打开。
 > AutoCodeBar reads the local Messages and Mail data on your own Mac, read-only, and nowhere else.

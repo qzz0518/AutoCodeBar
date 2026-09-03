@@ -1,12 +1,9 @@
 <!-- sparkle-sign-warning:
 IMPORTANT: This file was signed by Sparkle. Any modifications to this file requires updating signatures in appcasts that reference this file! This will involve re-running generate_appcast or sign_update.
 -->
-<p align="center">
-  <img src="https://raw.githubusercontent.com/qzz0518/AutoCodeBar/main/Resources/Screenshots/app-icon-rounded.png" width="96" alt="AutoCodeBar icon" />
-</p>
+# AutoCodeBar 2.0.1
 
-<h2 align="center">AutoCodeBar 2.0.1</h2>
-<p align="center">修复短信与通知中心来源经常收不到新消息的问题。</p>
+修复短信与通知中心来源经常收不到新消息的问题。
 
 ## 更新日志
 
