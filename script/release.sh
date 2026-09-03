@@ -117,7 +117,10 @@ if [ "$GENERATE_APPCAST" = "1" ]; then
 		cp "$ROOT/site/AutoCodeBar-$VERSION.md" "$UPDATES_DIR/"
 	fi
 	cp "$DMG" "$UPDATES_DIR/"
+	# One DMG per run and no delta packages: every release lives under its
+	# own tag directory, and deltas would need their own uploaded assets.
 	"$SPARKLE_TOOLS/generate_appcast" \
+		--maximum-deltas 0 \
 		--download-url-prefix "https://github.com/qzz0518/AutoCodeBar/releases/download/$TAG/" \
 		--release-notes-url-prefix "https://qzz0518.github.io/AutoCodeBar/" \
 		"$UPDATES_DIR"
