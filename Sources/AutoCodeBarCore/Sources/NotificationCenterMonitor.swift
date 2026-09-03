@@ -19,6 +19,7 @@ public final class NotificationCenterMonitor: SourceMonitor {
   private var databaseURL: URL?
   private var continuation: AsyncStream<SourceEvent>.Continuation?
   private var watcher: FSEventsWatcher?
+  private var poller: DatabaseChangePoller?
   private var pending: DispatchWorkItem?
   private var lastRecordID: Int64 = 0
   private var consecutiveFailures = 0
@@ -31,6 +32,7 @@ public final class NotificationCenterMonitor: SourceMonitor {
 
   deinit {
     watcher?.stop()
+    poller?.stop()
   }
 
   /// 定位系统通知数据库。
@@ -80,6 +82,8 @@ public final class NotificationCenterMonitor: SourceMonitor {
       self.pending = nil
       self.watcher?.stop()
       self.watcher = nil
+      self.poller?.stop()
+      self.poller = nil
       self.continuation?.finish()
       self.continuation = nil
     }
@@ -125,6 +129,13 @@ public final class NotificationCenterMonitor: SourceMonitor {
       return
     }
     self.watcher = watcher
+
+    // 守护进程写通知数据库时 fseventsd 不一定发事件，轮询兜底。
+    let poller = DatabaseChangePoller(databaseURL: url, queue: queue) { [weak self] in
+      self?.scheduleDrain()
+    }
+    poller.start()
+    self.poller = poller
     emit(.running)
   }
 
@@ -147,6 +158,13 @@ public final class NotificationCenterMonitor: SourceMonitor {
 
   private func handle(paths: [String]) {
     guard started, paths.contains(where: { NotificationCenterMonitor.isInteresting(path: $0) }) else {
+      return
+    }
+    scheduleDrain()
+  }
+
+  private func scheduleDrain() {
+    guard started else {
       return
     }
     pending?.cancel()
@@ -258,6 +276,8 @@ public final class NotificationCenterMonitor: SourceMonitor {
     pending = nil
     watcher?.stop()
     watcher = nil
+    poller?.stop()
+    poller = nil
     continuation?.finish()
     continuation = nil
   }

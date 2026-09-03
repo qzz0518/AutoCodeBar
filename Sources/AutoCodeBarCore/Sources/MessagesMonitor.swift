@@ -23,6 +23,7 @@ public final class MessagesMonitor: SourceMonitor {
 
   private var continuation: AsyncStream<SourceEvent>.Continuation?
   private var watcher: FSEventsWatcher?
+  private var poller: DatabaseChangePoller?
   private var pending: DispatchWorkItem?
   private var lastRowID: Int64 = 0
   private var consecutiveFailures = 0
@@ -35,6 +36,7 @@ public final class MessagesMonitor: SourceMonitor {
 
   deinit {
     watcher?.stop()
+    poller?.stop()
   }
 
   public func start() -> AsyncStream<SourceEvent> {
@@ -67,6 +69,8 @@ public final class MessagesMonitor: SourceMonitor {
       self.pending = nil
       self.watcher?.stop()
       self.watcher = nil
+      self.poller?.stop()
+      self.poller = nil
       self.continuation?.finish()
       self.continuation = nil
     }
@@ -111,6 +115,13 @@ public final class MessagesMonitor: SourceMonitor {
       return
     }
     self.watcher = watcher
+
+    // 守护进程写 chat.db 时 fseventsd 不一定发事件，轮询兜底。
+    let poller = DatabaseChangePoller(databaseURL: databaseURL, queue: queue) { [weak self] in
+      self?.scheduleDrain()
+    }
+    poller.start()
+    self.poller = poller
     emit(.running)
   }
 
@@ -127,8 +138,21 @@ public final class MessagesMonitor: SourceMonitor {
   // MARK: - 事件
 
   private func handle(paths: [String]) {
-    let matched = paths.contains { (($0 as NSString).lastPathComponent).hasPrefix("chat.db") }
+    // 守护进程写 chat.db 本身不触发 fseventsd；收到新消息时通常会顺带写
+    // NickNameCache，把它也当作提前信号，真正的兜底是轮询。
+    let matched = paths.contains { path in
+      (path as NSString).lastPathComponent.hasPrefix("chat.db") || path.contains("/NickNameCache/")
+    }
+    let names = paths.map { ($0 as NSString).lastPathComponent }.joined(separator: ",")
+    logger.debug("fs event matched=\(matched) paths=\(names, privacy: .public)")
     guard matched, started else {
+      return
+    }
+    scheduleDrain()
+  }
+
+  private func scheduleDrain() {
+    guard started else {
       return
     }
     pending?.cancel()
@@ -151,7 +175,9 @@ public final class MessagesMonitor: SourceMonitor {
 
       var maxRowID = lastRowID
       var produced: [Candidate] = []
+      var rows = 0
       while try statement.step() {
+        rows += 1
         let rowID = statement.int64(0)
         maxRowID = max(maxRowID, rowID)
         guard let candidate = makeCandidate(rowID: rowID, statement: statement) else {
@@ -159,6 +185,7 @@ public final class MessagesMonitor: SourceMonitor {
         }
         produced.append(candidate)
       }
+      logger.info("drain rows=\(rows) candidates=\(produced.count) lastRowID \(self.lastRowID)->\(maxRowID)")
       lastRowID = maxRowID
       consecutiveFailures = 0
       for candidate in produced {
@@ -180,12 +207,15 @@ public final class MessagesMonitor: SourceMonitor {
         .trimmingCharacters(in: .whitespacesAndNewlines)
     }
     guard let text = body, !text.isEmpty else {
+      logger.info("row \(rowID) skipped: empty text")
       return nil
     }
 
     let handle = statement.text(3)
     let receivedAt = MessagesMonitor.date(from: statement.int64(4))
-    guard Date().timeIntervalSince(receivedAt) <= 600 else {
+    let age = Date().timeIntervalSince(receivedAt)
+    guard age <= 600 else {
+      logger.info("row \(rowID) skipped: stale age=\(Int(age))s")
       return nil
     }
 
@@ -220,6 +250,8 @@ public final class MessagesMonitor: SourceMonitor {
     pending = nil
     watcher?.stop()
     watcher = nil
+    poller?.stop()
+    poller = nil
     continuation?.finish()
     continuation = nil
   }
