@@ -113,9 +113,12 @@ if [ "$GENERATE_APPCAST" = "1" ]; then
 	fi
 	# The release notes are signed alongside the DMG, so the feed can point at
 	# them without giving an attacker a place to inject unsigned content.
-	if [ -f "$ROOT/site/AutoCodeBar-$VERSION.md" ]; then
-		cp "$ROOT/site/AutoCodeBar-$VERSION.md" "$UPDATES_DIR/"
-	fi
+	# AutoCodeBar-<version>.md is the default (English) text; two-letter
+	# language variants such as AutoCodeBar-<version>.zh.md become
+	# xml:lang entries that Sparkle picks by the user's language.
+	for NOTES in "$ROOT/site/AutoCodeBar-$VERSION.md" "$ROOT/site/AutoCodeBar-$VERSION".??.md; do
+		[ -f "$NOTES" ] && cp "$NOTES" "$UPDATES_DIR/"
+	done
 	cp "$DMG" "$UPDATES_DIR/"
 	# One DMG per run and no delta packages: every release lives under its
 	# own tag directory, and deltas would need their own uploaded assets.
