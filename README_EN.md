@@ -41,6 +41,10 @@ check, which you can turn off.
 - **Code in the menu bar**: after a copy, the digits appear next to the menu bar icon for about 15 seconds,
   so you can confirm the copy without a notification.
 - **System notification**: optional. A banner reads "Copied code 482913 · from JD · SMS".
+- **Quick Fill**: for 60 seconds after a code arrives, a "Fill 482913" card floats next to the focused input
+  field; one click types the code character by character, six-box code fields included. Off by default, and
+  when on it needs Accessibility access, granted through the same guide card as Full Disk Access. The
+  clipboard, the menu bar code, and the notification behave as before.
 - **Recognition, not just matching**: a keyword gate first (Chinese, English, Japanese, Korean, Traditional
   Chinese, all customisable), then each candidate is scored on distance to the keyword, position after it,
   digit count, and context. Amounts, units, years, card tails, order numbers, and digits inside URLs are
@@ -140,6 +144,11 @@ this Mac ticked; messages then land in the Messages app and AutoCodeBar uses the
 iPhone Mirroring, iPhone notifications reach the Mac's Notification Center; enable the experimental
 Notification Center source under Settings › Sources.
 
+**Quick Fill**: to have codes typed straight into the field you are in, turn on "Show a Fill button next to
+the input field" under Settings › General. The first time you do, the same guide card as Full Disk Access
+appears; drag **AutoCodeBar** from it into the Privacy & Security › Accessibility list. Leaving it off
+changes nothing: codes still reach the clipboard for ⌘V.
+
 **Pause**: the pause button at the top right of the panel stops every source and the icon becomes an
 outlined key. Relaunching the app resumes monitoring.
 
@@ -157,7 +166,7 @@ outlined key. Relaunching the app resumes monitoring.
 | Code recognition | 39-sample regression suite | 4–8 alphanumeric characters with at least one digit; keyword gate before scoring; amounts, units, years, card tails, order numbers, and digits inside URLs excluded |
 | De-duplication | Unit-tested | A code is accepted once per 300 seconds regardless of source |
 | Clipboard | Verified on hardware | Replaces the current clipboard contents; carries the concealed marker |
-| Auto-paste / auto-enter | Not provided | Would require Accessibility permission; out of scope |
+| Quick Fill | Verified on hardware (Chrome single-line and six-box fields) | Off by default; requires Accessibility access; shown only within 60 seconds of a code arriving and while the focus is on a text input field (AXTextField / AXTextArea / AXComboBox / AXSearchField); password fields are never filled |
 
 ## Privacy and Network Use
 
@@ -168,7 +177,7 @@ outlined key. Relaunching the app resumes monitoring.
 | Clipboard | The code itself, with the `org.nspasteboard.ConcealedType` marker |
 | Settings | Stored in local `UserDefaults` |
 | Network | Only the Sparkle update check reaches the signed appcast on GitHub Pages and GitHub Releases (once a day, can be turned off in Settings); no server, analytics SDK, or other requests |
-| Permissions | Full Disk Access (required, to read Messages and Mail data); Notifications (optional) |
+| Permissions | Full Disk Access (required, to read Messages and Mail data); Notifications (optional); Accessibility (optional, used only by Quick Fill to type the code into the focused field) |
 
 The GitHub and X buttons inside the app only open the corresponding page in your default browser.
 
@@ -202,7 +211,7 @@ Sources/
 ├── AutoCodeBarCore/
 │   ├── Domain/        SourceKind, SourceStatus, Candidate, CodeEvent, AppSettings
 │   ├── Extraction/    TextNormalizer → ExtractionRules → CodeExtractor (scored recognition)
-│   ├── Pipeline/      CodePipeline, Deduplicator, Clipboard, History
+│   ├── Pipeline/      CodePipeline, Deduplicator, Clipboard, History, Keystrokes
 │   ├── Sources/       the three monitors plus FSEventsWatcher, SQLite, TypedStreamText, Emlx/MIME parsing
 │   └── Permissions/   PermissionProbe, SystemSettingsLinks, DarwinPaths
 └── AutoCodeBar/
@@ -210,7 +219,8 @@ Sources/
     ├── MenuBar/       menu bar icon and panel
     ├── Settings/      the five settings pages
     ├── Onboarding/    first-run guide
-    ├── Permissions/   Full Disk Access guide card
+    ├── Permissions/   Full Disk Access and Accessibility guide cards
+    ├── QuickFill/     fill card and focused-field probe
     ├── Support/       Sparkle updates, launch at login, notifications, relaunch
     └── Design/        Theme tokens and shared components
 Resources/Localizations/  zh-Hans and en string tables

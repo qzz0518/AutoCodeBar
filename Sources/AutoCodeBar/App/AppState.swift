@@ -30,6 +30,8 @@ final class AppState {
   private(set) var flashCode: String?
   private(set) var fullDiskAccess: PermissionProbe.FDAState
   private(set) var notificationAuth: UNAuthorizationStatus = .notDetermined
+  /// 辅助功能授权。「一键填入」需要它，其余功能都不需要。
+  private(set) var accessibilityTrusted: Bool
   /// 规则页正则编译错误；非 nil 时沿用上一次有效规则。
   private(set) var rulesError: String?
   private(set) var launchAtLoginError: String?
@@ -54,6 +56,8 @@ final class AppState {
   private let defaults: UserDefaults
   private let pipeline: CodePipeline
   private let clipboard: Clipboard
+  private let accessibilityProbe: () -> Bool
+  private let quickFill: QuickFillPresenting
   private let presenter = NotificationPresenter()
   private let onboardingController = OnboardingWindowController()
 
@@ -65,12 +69,19 @@ final class AppState {
   private var permissionTick = 0
   private var didBootstrap = false
 
-  init(updater: AppUpdater, defaults: UserDefaults = .standard) {
+  init(
+    updater: AppUpdater,
+    defaults: UserDefaults = .standard,
+    accessibilityProbe: @escaping () -> Bool = PermissionProbe.accessibility,
+    quickFill: QuickFillPresenting? = nil
+  ) {
     self.updater = updater
     self.defaults = defaults
+    self.accessibilityProbe = accessibilityProbe
     // 探测只是两次 `open()`，同步做掉，界面第一帧就是真实状态，
     // 不会先闪一下「未授权」。
     self.fullDiskAccess = PermissionProbe.fullDiskAccess()
+    self.accessibilityTrusted = accessibilityProbe()
     let loaded = AppSettingsStore.load(from: defaults)
     self.settings = loaded
     let clipboard = PasteboardClipboard()
@@ -81,6 +92,9 @@ final class AppState {
       clipboard: clipboard,
       ignoredNotificationApps: loaded.ignoredNotificationApps
     )
+    let presenting = quickFill ?? QuickFillController()
+    presenting.pressesReturn = loaded.quickFillPressesReturn
+    self.quickFill = presenting
     for kind in SourceKind.allCases {
       sourceStatuses[kind] = .off
     }
@@ -124,12 +138,26 @@ final class AppState {
         self.permissionTick &+= 1
         if self.onboardingController.isVisible {
           self.refreshPermissions()
+        } else if self.settings.quickFillEnabled, !self.accessibilityTrusted {
+          // 用户正开着「一键填入」等授权：每一拍都看一眼，授权后立刻生效。
+          self.refreshPermissions()
         } else if self.sourceStatuses.values.contains(.needsFullDiskAccess), self.permissionTick % 5 == 0 {
           self.refreshPermissions()
         }
       }
     }
     permissionTimer = timer
+
+    // 辅助功能授权变化时系统会发这条分布式通知，不必等下一拍轮询。
+    DistributedNotificationCenter.default().addObserver(
+      forName: Notification.Name("com.apple.accessibility.api"),
+      object: nil,
+      queue: .main
+    ) { [weak self] _ in
+      MainActor.assumeIsolated {
+        self?.refreshPermissions()
+      }
+    }
 
     if !settings.onboardingCompleted {
       showOnboarding()
@@ -166,6 +194,7 @@ final class AppState {
       return
     }
     isPaused = true
+    quickFill.cancel()
     for kind in SourceKind.allCases {
       stopSource(kind)
     }
@@ -256,6 +285,14 @@ final class AppState {
     if old.ignoredNotificationApps != new.ignoredNotificationApps {
       pipeline.updateIgnoredNotificationApps(new.ignoredNotificationApps)
     }
+
+    if old.quickFillEnabled, !new.quickFillEnabled {
+      quickFill.cancel()
+    }
+
+    if old.quickFillPressesReturn != new.quickFillPressesReturn {
+      quickFill.pressesReturn = new.quickFillPressesReturn
+    }
   }
 
   private func rebuildRules() {
@@ -327,6 +364,8 @@ final class AppState {
   // MARK: - 权限
 
   func refreshPermissions() {
+    // AX 探测就是一次进程内查询，同步做掉。
+    accessibilityTrusted = accessibilityProbe()
     Task.detached(priority: .utility) { [weak self] in
       let probed = PermissionProbe.fullDiskAccess()
       await self?.applyFullDiskAccess(probed)
@@ -340,7 +379,7 @@ final class AppState {
   /// 打开系统设置的完整磁盘访问面板并弹出拖拽引导卡片；
   /// 10 秒后若仍未生效则显示「重新启动应用」。
   func openFullDiskAccessSettings() {
-    FullDiskAccessGuide.shared.present()
+    PrivacyPaneGuide.fullDiskAccess.present()
     relaunchHintTask?.cancel()
     relaunchHintTask = Task { [weak self] in
       try? await Task.sleep(nanoseconds: 10 * NSEC_PER_SEC)
@@ -366,6 +405,16 @@ final class AppState {
     }
   }
 
+  /// 设置 › 通用 的「一键填入」开关。未授权时打开「辅助功能」面板并弹出拖拽
+  /// 引导卡片；授权由卡片自己探测，提示条则靠权限轮询消失，都不需要重启。
+  func setQuickFill(enabled: Bool) {
+    settings.quickFillEnabled = enabled
+    guard enabled, !accessibilityTrusted else {
+      return
+    }
+    PrivacyPaneGuide.accessibility.present()
+  }
+
   func requestNotificationAuthorization() {
     Task { [weak self] in
       guard let self else {
@@ -378,13 +427,16 @@ final class AppState {
 
   // MARK: - 事件
 
-  private func handle(event: CodeEvent, copied: Bool) {
+  func handle(event: CodeEvent, copied: Bool) {
     history = pipeline.history.events
     if settings.showCodeInMenuBar {
       flash(event.code)
     }
     if copied, settings.showCopyNotification {
       presenter.present(event)
+    }
+    if settings.quickFillEnabled, accessibilityTrusted {
+      quickFill.offer(event)
     }
   }
 
@@ -498,6 +550,26 @@ extension AppState {
         receivedAt: now.addingTimeInterval(-42 * 60)
       )
     ]
+  }
+
+  /// `--debug-offer-code` 用：绕过设置开关直接开一个填入会话，
+  /// 不复制、不闪码、不发通知，只走填入这一条路。真实的 AX 调用不绕过。
+  func debugOfferQuickFill(code: String) {
+    accessibilityTrusted = true
+    quickFill.offer(
+      CodeEvent(
+        code: code,
+        kind: .messages,
+        senderDisplay: "京东",
+        preview: "【京东】验证码 \(code)，5 分钟内有效。",
+        receivedAt: Date()
+      )
+    )
+  }
+
+  /// `--debug-fill-after` 用：等价于用户点了面板。
+  func debugFillQuickFill() {
+    (quickFill as? QuickFillController)?.fill()
   }
 }
 #endif

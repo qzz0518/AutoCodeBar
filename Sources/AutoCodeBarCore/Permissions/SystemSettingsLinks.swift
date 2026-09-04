@@ -13,6 +13,10 @@ public enum SystemSettingsLinks {
     }
   }
 
+  public static func openAccessibility() {
+    open("x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility")
+  }
+
   @discardableResult
   private static func open(_ urlString: String) -> Bool {
     guard let url = URL(string: urlString) else {

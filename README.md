@@ -34,6 +34,8 @@ AutoCodeBar 常驻菜单栏，监听本机「信息」和「邮件」的新内�
 - **零延迟感知**：用 FSEvents 监听文件变化，不轮询。短信从到达到进入剪贴板通常在半秒内。
 - **菜单栏闪码**：复制后菜单栏图标旁直接显示验证码，约 15 秒后自动隐藏；不想看通知也能确认复制成功。
 - **系统通知**：可选。横幅显示「已复制验证码 482913 · 来自 京东 · 短信」。
+- **一键填入**：验证码到达后 60 秒内，光标所在的输入框旁会浮出一张「填入 482913」的卡片，点一下就逐字键入，
+  六格分框的验证码也适用。默认关闭，打开时需要辅助功能权限，授权引导与完整磁盘访问同款；剪贴板、菜单栏闪码与通知照常。
 - **识别而不是匹配**：先用关键词门控（中、英、日、韩、繁体，可自定义），再对候选片段打分：与关键词的距离、
   是否位于关键词之后、位数、前后文（排除金额、单位、尾号、订单号、年份、URL 中的数字）。
   `G-482913`、`482-913`、`RKJ-YP6` 这类格式都能正确归一。39 条真实样式的语料作为回归测试。
@@ -120,6 +122,9 @@ macOS 把「完整磁盘访问」授权绑定到应用的代码签名要求。ad
 AutoCodeBar 走短信来源。如果你使用 iPhone 镜像，iPhone 的通知会送达 Mac 的通知中心，可以在
 「设置 › 来源」里开启实验性的「通知中心」来源。
 
+**一键填入**：想让验证码直接落进输入框，在「设置 › 通用」打开「在输入框旁显示填入按钮」。首次打开会弹出与完整磁盘访问
+同款的引导卡片，把里面的 AutoCodeBar 拖进「隐私与安全性 › 辅助功能」列表即可。不开也不影响，验证码照常进剪贴板，⌘V 粘贴。
+
 **暂停**：面板右上角的暂停按钮会停止所有来源，图标变为空心钥匙；重新启动应用会自动恢复。
 
 <p align="center">
@@ -136,7 +141,7 @@ AutoCodeBar 走短信来源。如果你使用 iPhone 镜像，iPhone 的通知�
 | 验证码识别 | 39 条语料回归测试 | 4–8 位字母数字且至少含 1 位数字；先命中关键词再打分；金额、单位、年份、尾号、订单号、URL 内的数字会被排除 |
 | 去重 | 单元测试 | 同一验证码 300 秒内只接受一次，不区分来源 |
 | 剪贴板 | 实机验证 | 覆盖剪贴板当前内容；带机密标记 |
-| 自动粘贴 / 自动回车 | 未提供 | 需要辅助功能权限，不在当前范围 |
+| 一键填入 | 实机验证（Chrome 单行框与 6 格分框） | 默认关闭；需要辅助功能权限；只在验证码到达后 60 秒内、且焦点在文本输入框（AXTextField / AXTextArea / AXComboBox / AXSearchField）时显示；密码框不代填 |
 
 ## 隐私与网络
 
@@ -147,7 +152,7 @@ AutoCodeBar 走短信来源。如果你使用 iPhone 镜像，iPhone 的通知�
 | 剪贴板 | 写入验证码本身，并附 `org.nspasteboard.ConcealedType` 标记 |
 | 设置 | 保存在本机 `UserDefaults` |
 | 网络 | 仅 Sparkle 更新检查会访问 GitHub Pages 上的签名 appcast 与 GitHub Releases（每天一次，可在设置里关闭）；没有服务器、分析 SDK 或其他网络请求 |
-| 权限 | 完整磁盘访问（读取「信息」与「邮件」数据，必需）；通知（可选） |
+| 权限 | 完整磁盘访问（读取「信息」与「邮件」数据，必需）；通知（可选）；辅助功能（可选，仅「一键填入」用来把验证码键入当前输入框） |
 
 应用内的 GitHub 与 X 按钮只会在默认浏览器打开对应页面。
 
@@ -181,7 +186,7 @@ Sources/
 ├── AutoCodeBarCore/
 │   ├── Domain/        SourceKind、SourceStatus、Candidate、CodeEvent、AppSettings
 │   ├── Extraction/    TextNormalizer → ExtractionRules → CodeExtractor（打分识别）
-│   ├── Pipeline/      CodePipeline、Deduplicator、Clipboard、History
+│   ├── Pipeline/      CodePipeline、Deduplicator、Clipboard、History、Keystrokes
 │   ├── Sources/       三个监听器 + FSEventsWatcher、SQLite、TypedStreamText、Emlx/MIME 解析
 │   └── Permissions/   PermissionProbe、SystemSettingsLinks、DarwinPaths
 └── AutoCodeBar/
@@ -189,7 +194,8 @@ Sources/
     ├── MenuBar/       菜单栏图标与面板
     ├── Settings/      设置窗口五页
     ├── Onboarding/    首次启动引导
-    ├── Permissions/   完整磁盘访问引导卡片
+    ├── Permissions/   完整磁盘访问与辅助功能引导卡片
+    ├── QuickFill/     填入卡片、聚焦输入框探测
     ├── Support/       Sparkle 更新、登录启动、通知、重启
     └── Design/        Theme 令牌与通用组件
 Resources/Localizations/  zh-Hans 与 en 字符串表

@@ -10,6 +10,10 @@ struct PermissionsPane: View {
     state.fullDiskAccess == .granted
   }
 
+  private var quickFillEnabled: Bool {
+    state.settings.quickFillEnabled
+  }
+
   private var notificationGranted: Bool {
     state.notificationAuth == .authorized || state.notificationAuth == .provisional
   }
@@ -41,6 +45,17 @@ struct PermissionsPane: View {
             Button(L10n.text("允许…")) { state.requestNotificationAuthorization() }
               .buttonStyle(SoftButtonStyle())
           }
+        }
+
+        PermissionRow(
+          title: L10n.text("辅助功能"),
+          detail: L10n.text("「一键填入」把验证码键入当前输入框时使用；不开启该功能则用不到。"),
+          granted: state.accessibilityTrusted,
+          missingText: quickFillEnabled ? L10n.text("未授权") : L10n.text("未开启"),
+          missingTone: quickFillEnabled ? .warn : .neutral
+        ) {
+          Button(L10n.text("打开系统设置")) { PrivacyPaneGuide.accessibility.present() }
+            .buttonStyle(SoftButtonStyle())
         }
       }
 

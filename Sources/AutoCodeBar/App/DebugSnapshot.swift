@@ -11,6 +11,13 @@ import AutoCodeBarCore
 /// - `AutoCodeBar --snapshot-window <名称> <png 路径> [--snapshot-appearance dark|light]`
 ///   把设置窗、引导窗或授权卡片离屏画成 PNG。名称见 `Window`。
 ///   这条路径不需要屏幕解锁，也不需要窗口真的出现在屏幕上。
+/// - `AutoCodeBar --snapshot-quickfill <png 路径> [--snapshot-appearance dark|light]`
+///   只画「一键填入」的卡片。
+/// - `AutoCodeBar --debug-offer-code <验证码> [--debug-fill-after <秒>]`
+///   正常启动，2 秒后直接开一个填入会话（不复制、不闪码、不通知）；
+///   给了秒数则到点自动调用 `fill()`，等价于用户点了面板。
+/// - `AutoCodeBar --debug-present-guide fullDiskAccess|accessibility`
+///   正常启动，2 秒后弹出对应面板的拖拽引导卡片，用来实机看卡片飞向系统设置窗口。
 @MainActor
 enum DebugSnapshot {
   /// 快照进行中。`ImageRenderer` 画不出 `Menu`，视图据此改用静态占位。
@@ -28,6 +35,7 @@ enum DebugSnapshot {
     case onboardingDone = "onboarding-done"
     case guideCard = "guide-card"
     case guideCardGranted = "guide-card-granted"
+    case guideCardAccessibilityGranted = "guide-card-accessibility-granted"
     case popover = "popover"
 
     var size: NSSize {
@@ -37,7 +45,7 @@ enum DebugSnapshot {
         return NSSize(width: 800, height: 580)
       case .onboardingWelcome, .onboardingPermissions, .onboardingDone:
         return NSSize(width: 920, height: 600)
-      case .guideCard, .guideCardGranted:
+      case .guideCard, .guideCardGranted, .guideCardAccessibilityGranted:
         return NSSize(width: 612, height: 140)
       case .popover:
         // 高度随历史条数变化，0 表示按内容自适应。
@@ -86,7 +94,57 @@ enum DebugSnapshot {
       state.debugInstallSampleState()
       renderWindow(window, state: state, to: URL(fileURLWithPath: arguments[index + 2]))
     }
+    if let index = arguments.firstIndex(of: "--snapshot-quickfill"), index + 1 < arguments.count {
+      isActive = true
+      applyAppearance(arguments)
+      renderQuickFill(to: URL(fileURLWithPath: arguments[index + 1]))
+    }
+    scheduleQuickFillOffer(arguments, state: state)
+    schedulePresentGuide(arguments)
     return false
+  }
+
+  /// 实机看引导卡片：正常 `bootstrap()` 之后再弹，免得和引导窗口抢先后。
+  private static func schedulePresentGuide(_ arguments: [String]) {
+    guard let index = arguments.firstIndex(of: "--debug-present-guide"),
+          index + 1 < arguments.count else {
+      return
+    }
+    let guide: PrivacyPaneGuide
+    switch arguments[index + 1] {
+    case "accessibility": guide = .accessibility
+    case "fullDiskAccess": guide = .fullDiskAccess
+    default:
+      FileHandle.standardError.write(Data("debug-present-guide: expected fullDiskAccess or accessibility\n".utf8))
+      return
+    }
+    Task { @MainActor in
+      try? await Task.sleep(for: .seconds(2))
+      guide.present()
+    }
+  }
+
+  /// 无人点击时验证键入：正常 `bootstrap()` 之后自己开会话、自己点面板。
+  private static func scheduleQuickFillOffer(_ arguments: [String], state: AppState) {
+    guard let index = arguments.firstIndex(of: "--debug-offer-code"),
+          index + 1 < arguments.count else {
+      return
+    }
+    let code = arguments[index + 1]
+    var fillAfter: Double?
+    if let delayIndex = arguments.firstIndex(of: "--debug-fill-after"),
+       delayIndex + 1 < arguments.count {
+      fillAfter = Double(arguments[delayIndex + 1])
+    }
+    Task { @MainActor in
+      try? await Task.sleep(for: .seconds(2))
+      state.debugOfferQuickFill(code: code)
+      guard let fillAfter else {
+        return
+      }
+      try? await Task.sleep(for: .seconds(fillAfter))
+      state.debugFillQuickFill()
+    }
   }
 
   private static func applyAppearance(_ arguments: [String]) {
@@ -115,6 +173,34 @@ enum DebugSnapshot {
     renderer.isOpaque = false
 
     guard let image = renderer.cgImage else {
+      FileHandle.standardError.write(Data("snapshot: render failed\n".utf8))
+      exit(2)
+    }
+    write(NSBitmapImageRep(cgImage: image), to: output)
+  }
+
+  private static func renderQuickFill(to output: URL) -> Never {
+    let event = CodeEvent(
+      code: "482913",
+      kind: .messages,
+      senderDisplay: "京东",
+      preview: "【京东】验证码 482913，5 分钟内有效。",
+      receivedAt: Date()
+    )
+    let view = QuickFillCard(event: event, onFill: {}, onDismiss: {})
+      .background(Theme.window)
+      .environment(\.colorScheme, prefersDark ? .dark : .light)
+
+    let renderer = ImageRenderer(content: view)
+    renderer.scale = 2
+    renderer.isOpaque = true
+
+    // `Theme` 的颜色是动态 `NSColor`，要在对应外观下解析才不会全部落到浅色。
+    var image: CGImage?
+    NSApp.effectiveAppearance.performAsCurrentDrawingAppearance {
+      image = renderer.cgImage
+    }
+    guard let image else {
       FileHandle.standardError.write(Data("snapshot: render failed\n".utf8))
       exit(2)
     }
@@ -174,8 +260,11 @@ enum DebugSnapshot {
       PopoverView(state: state)
         .background(Color(nsColor: .windowBackgroundColor))
     } else {
-      FullDiskAccessGuide.debugCard(granted: window == .guideCardGranted)
-        .frame(width: window.size.width, height: window.size.height)
+      PrivacyPaneGuide.debugCard(
+        pane: window == .guideCardAccessibilityGranted ? .accessibility : .fullDiskAccess,
+        granted: window == .guideCardGranted || window == .guideCardAccessibilityGranted
+      )
+      .frame(width: window.size.width, height: window.size.height)
     }
   }
 

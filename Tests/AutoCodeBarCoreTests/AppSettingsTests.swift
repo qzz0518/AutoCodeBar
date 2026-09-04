@@ -25,6 +25,28 @@ struct AppSettingsTests {
     #expect(settings.keywords.contains("验证码"))
     #expect(settings.codePattern == AppSettings.defaultCodePattern)
     #expect(settings.ignoredNotificationApps.contains("ru.keepcoder.telegram"))
+    #expect(!settings.quickFillEnabled)
+    #expect(!settings.quickFillPressesReturn)
+  }
+
+  @Test("旧 JSON 没有一键填入的两个键时都为 false")
+  func quickFillDefaultsWhenAbsent() throws {
+    let json = Data(#"{"schemaVersion": 2}"#.utf8)
+    let settings = try JSONDecoder().decode(AppSettings.self, from: json)
+    #expect(!settings.quickFillEnabled)
+    #expect(!settings.quickFillPressesReturn)
+  }
+
+  @Test("一键填入的两个键往返保值")
+  func quickFillRoundTrip() throws {
+    var settings = AppSettings()
+    settings.quickFillEnabled = true
+    settings.quickFillPressesReturn = true
+    let data = try JSONEncoder().encode(settings)
+    let decoded = try JSONDecoder().decode(AppSettings.self, from: data)
+    #expect(decoded.quickFillEnabled)
+    #expect(decoded.quickFillPressesReturn)
+    #expect(decoded == settings)
   }
 
   @Test("缺字段解码回落默认值")

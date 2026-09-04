@@ -3,37 +3,58 @@ import SwiftUI
 
 import AutoCodeBarCore
 
-/// 「完整磁盘访问」无法弹窗申请：用户必须自己找到系统设置深处的那份列表，
-/// 再把应用加进去。这个引导打开对应面板，在点击处弹出一张卡片，沿弧线飞到
-/// 系统设置窗口并带弹性落定，给用户一份可拖拽的应用图标，同时盯着 TCC 探测，
-/// 授权后卡片自己确认并退场。
+/// 「完整磁盘访问」和「辅助功能」都没法弹窗申请：用户必须自己找到系统设置深处的
+/// 那份列表，再把应用加进去。这个引导打开对应面板，在点击处弹出一张卡片，沿弧线飞到
+/// 系统设置窗口并带弹性落定，给用户一份可拖拽的应用图标，同时盯着授权探测，
+/// 授权后卡片自己确认并退场。两份列表的交互完全同构——都接受把 .app 拖进去、
+/// 都有一个开关——所以只有面板链接、探测方式和已授权文案随 `Pane` 变。
 ///
 /// 卡片用 `CGWindowListCopyWindowInfo` 的窗口边界跟随系统设置——不像基于
 /// 辅助功能的跟踪，这不需要任何额外授权（一个权限助手反过来先要权限，荒谬）。
 @MainActor
-final class FullDiskAccessGuide {
-  static let shared = FullDiskAccessGuide()
+final class PrivacyPaneGuide {
+  /// 引导指向「隐私与安全性」下的哪一份列表。
+  enum Pane {
+    case fullDiskAccess
+    case accessibility
+  }
+
+  static let fullDiskAccess = PrivacyPaneGuide(pane: .fullDiskAccess)
+  static let accessibility = PrivacyPaneGuide(pane: .accessibility)
+
+  let pane: Pane
 
   private var panel: NSPanel?
-  private var model = GuideModel()
+  private var model: GuideModel
   private var watcher: Task<Void, Never>?
   /// 用户正把行从卡片里拖出来时为真：跟随逻辑不能在拖拽进行中挪动卡片。
   private var followSuspended = false
 
-  private static let paneURL = URL(
-    string: "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles"
-  )
+  private init(pane: Pane) {
+    self.pane = pane
+    self.model = GuideModel(pane: pane)
+  }
+
+  /// 另一个面板的引导。两张卡片停在同一个位置，同时只能有一张。
+  private var sibling: PrivacyPaneGuide {
+    switch pane {
+    case .fullDiskAccess: return Self.accessibility
+    case .accessibility: return Self.fullDiskAccess
+    }
+  }
 
   func present() {
-    if let url = Self.paneURL {
-      NSWorkspace.shared.open(url)
+    sibling.dismiss()
+    switch pane {
+    case .fullDiskAccess: SystemSettingsLinks.openFullDiskAccess()
+    case .accessibility: SystemSettingsLinks.openAccessibility()
     }
     if panel != nil {
       panel?.orderFrontRegardless()
       return
     }
 
-    model = GuideModel()
+    model = GuideModel(pane: pane)
     model.close = { [weak self] in self?.dismiss() }
     model.dragBegan = { [weak self] in self?.followSuspended = true }
     model.dragEnded = { [weak self] operation, endPoint in
@@ -49,7 +70,7 @@ final class FullDiskAccessGuide {
       }
     }
 
-    let hosting = NSHostingView(rootView: FDAGuideCard(model: model))
+    let hosting = NSHostingView(rootView: GuideCard(model: model))
     hosting.frame.size = hosting.fittingSize
 
     // 无边框且不激活：把图标拖出卡片时不能把焦点从拖放目标（系统设置窗口）抢走。
@@ -196,7 +217,7 @@ final class FullDiskAccessGuide {
       glideAlongsideSettings()
     }
     guard runProbe, model.granted == false else { return }
-    if PermissionProbe.fullDiskAccess() == .granted {
+    if isGranted {
       model.granted = true
       // 长到足够让绿勾被看见，短到用户切回应用时卡片已经走了。
       // macOS 也可能在这里重启我们——引导进度键会活下来。
@@ -204,6 +225,14 @@ final class FullDiskAccessGuide {
         try? await Task.sleep(for: .seconds(1.6))
         self?.dismiss()
       }
+    }
+  }
+
+  /// 面板对应的授权探测。两者都是同步、无副作用的查询。
+  private var isGranted: Bool {
+    switch pane {
+    case .fullDiskAccess: return PermissionProbe.fullDiskAccess() == .granted
+    case .accessibility: return PermissionProbe.accessibility()
     }
   }
 
@@ -223,23 +252,23 @@ final class FullDiskAccessGuide {
   }
 
   /// 系统设置窗口**内部**的右下角，像一张盖在权限列表上的浮条——离窗口右边和
-  /// 底边各 18pt。面板比可见卡片每边大 `FDAGuideCard.shadowPad`，故有偏移运算。
+  /// 底边各 18pt。面板比可见卡片每边大 `GuideCard.shadowPad`，故有偏移运算。
   private func perch(beside settings: NSRect, size: NSSize) -> NSPoint {
     let screen = NSScreen.screens.first { $0.frame.intersects(settings) } ?? NSScreen.main
     let visible = screen?.visibleFrame ?? settings
     let inset: CGFloat = 18
-    var x = settings.maxX - inset + FDAGuideCard.shadowPad - size.width
-    var y = settings.minY + inset - FDAGuideCard.shadowPad
-    x = max(visible.minX - FDAGuideCard.shadowPad, min(x, visible.maxX + FDAGuideCard.shadowPad - size.width))
-    y = max(visible.minY - FDAGuideCard.shadowPad, min(y, visible.maxY + FDAGuideCard.shadowPad - size.height))
+    var x = settings.maxX - inset + GuideCard.shadowPad - size.width
+    var y = settings.minY + inset - GuideCard.shadowPad
+    x = max(visible.minX - GuideCard.shadowPad, min(x, visible.maxX + GuideCard.shadowPad - size.width))
+    y = max(visible.minY - GuideCard.shadowPad, min(y, visible.maxY + GuideCard.shadowPad - size.height))
     return NSPoint(x: x, y: y)
   }
 
   private func fallbackPerch(size: NSSize) -> NSPoint {
     guard let visible = NSScreen.main?.visibleFrame else { return .zero }
     return NSPoint(
-      x: visible.maxX + FDAGuideCard.shadowPad - size.width - 24,
-      y: visible.minY - FDAGuideCard.shadowPad + 24
+      x: visible.maxX + GuideCard.shadowPad - size.width - 24,
+      y: visible.minY - GuideCard.shadowPad + 24
     )
   }
 
@@ -281,11 +310,17 @@ final class FullDiskAccessGuide {
 
 @MainActor
 private final class GuideModel: ObservableObject {
+  /// 卡片据此选已授权文案；指令文案两个面板相同。
+  let pane: PrivacyPaneGuide.Pane
   @Published var granted = false
   @Published var appeared = false
   var close: () -> Void = {}
   var dragBegan: () -> Void = {}
   var dragEnded: (NSDragOperation, NSPoint) -> Void = { _, _ in }
+
+  init(pane: PrivacyPaneGuide.Pane) {
+    self.pane = pane
+  }
 }
 
 /// 覆在行上的 AppKit 拖拽源：鼠标移动几个点就开始文件拖拽（SwiftUI 的 `.onDrag`
@@ -353,7 +388,7 @@ private struct AppDragHandle: NSViewRepresentable {
 
 /// 一条用系统设置自身视觉语言（系统色，不是应用主题）画出来的横幅：
 /// 一句指令，加上一个可拖拽的行——它就是用户即将在上方权限列表里创建的那一行。
-private struct FDAGuideCard: View {
+private struct GuideCard: View {
   /// 卡片四周的透明边距，免得画出的阴影被无边框面板裁掉。定位运算已计入它。
   static let shadowPad: CGFloat = 26
 
@@ -366,6 +401,15 @@ private struct FDAGuideCard: View {
   private var instruction: AttributedString {
     (try? AttributedString(markdown: Self.instructionMarkdown))
       ?? AttributedString(Self.instructionMarkdown)
+  }
+
+  private var grantedText: String {
+    switch model.pane {
+    case .fullDiskAccess:
+      return L10n.text("已授权 — macOS 可能会要求重新打开 AutoCodeBar。")
+    case .accessibility:
+      return L10n.text("已授权，一键填入已可用。")
+    }
   }
 
   var body: some View {
@@ -385,7 +429,7 @@ private struct FDAGuideCard: View {
             Image(systemName: "checkmark.circle.fill")
               .font(.system(size: 14, weight: .semibold))
               .foregroundStyle(Color(nsColor: .systemGreen))
-            Text(L10n.text("已授权 — macOS 可能会要求重新打开 AutoCodeBar。"))
+            Text(grantedText)
               .font(.system(size: 13, weight: .semibold))
               .foregroundStyle(.primary)
               .lineLimit(1)
@@ -443,14 +487,14 @@ private struct FDAGuideCard: View {
 }
 
 #if DEBUG
-extension FullDiskAccessGuide {
+extension PrivacyPaneGuide {
   /// 离屏快照用：不开面板、不跟随系统设置，只把卡片本身交出来。
   @MainActor
-  static func debugCard(granted: Bool) -> some View {
-    let model = GuideModel()
+  static func debugCard(pane: Pane, granted: Bool) -> some View {
+    let model = GuideModel(pane: pane)
     model.granted = granted
     model.appeared = true
-    return FDAGuideCard(model: model)
+    return GuideCard(model: model)
   }
 }
 #endif

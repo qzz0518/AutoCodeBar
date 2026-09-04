@@ -13,6 +13,10 @@ public struct AppSettings: Codable, Equatable, Sendable {
   public var keywords: [String]
   public var codePattern: String
   public var onboardingCompleted: Bool
+  /// 「在输入框旁显示填入按钮」。默认关闭，开了才需要辅助功能权限。
+  public var quickFillEnabled: Bool
+  /// 「填入后自动按回车」。
+  public var quickFillPressesReturn: Bool
 
   public init(
     schemaVersion: Int = 2,
@@ -22,7 +26,9 @@ public struct AppSettings: Codable, Equatable, Sendable {
     ignoredNotificationApps: [String] = AppSettings.defaultIgnoredNotificationApps,
     keywords: [String] = AppSettings.defaultKeywords,
     codePattern: String = AppSettings.defaultCodePattern,
-    onboardingCompleted: Bool = false
+    onboardingCompleted: Bool = false,
+    quickFillEnabled: Bool = false,
+    quickFillPressesReturn: Bool = false
   ) {
     self.schemaVersion = schemaVersion
     self.sources = sources
@@ -32,6 +38,8 @@ public struct AppSettings: Codable, Equatable, Sendable {
     self.keywords = keywords
     self.codePattern = codePattern
     self.onboardingCompleted = onboardingCompleted
+    self.quickFillEnabled = quickFillEnabled
+    self.quickFillPressesReturn = quickFillPressesReturn
   }
 
   public static let defaultSources: [SourceKind: Bool] = [
@@ -88,6 +96,8 @@ public struct AppSettings: Codable, Equatable, Sendable {
     case codePattern
     case onboardingCompleted
     case didFinishWelcome
+    case quickFillEnabled
+    case quickFillPressesReturn
   }
 
   public init(from decoder: Decoder) throws {
@@ -123,6 +133,10 @@ public struct AppSettings: Codable, Equatable, Sendable {
     onboardingCompleted = try container.decodeIfPresent(Bool.self, forKey: .onboardingCompleted)
       ?? container.decodeIfPresent(Bool.self, forKey: .didFinishWelcome)
       ?? false
+    quickFillEnabled = try container.decodeIfPresent(Bool.self, forKey: .quickFillEnabled) ?? false
+    quickFillPressesReturn = try container.decodeIfPresent(
+      Bool.self, forKey: .quickFillPressesReturn
+    ) ?? false
   }
 
   public func encode(to encoder: Encoder) throws {
@@ -139,6 +153,8 @@ public struct AppSettings: Codable, Equatable, Sendable {
     try container.encode(keywords, forKey: .keywords)
     try container.encode(codePattern, forKey: .codePattern)
     try container.encode(onboardingCompleted, forKey: .onboardingCompleted)
+    try container.encode(quickFillEnabled, forKey: .quickFillEnabled)
+    try container.encode(quickFillPressesReturn, forKey: .quickFillPressesReturn)
   }
 }
 

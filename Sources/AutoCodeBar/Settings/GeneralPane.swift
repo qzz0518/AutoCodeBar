@@ -63,6 +63,47 @@ struct GeneralPane: View {
         }
       }
 
+      SettingsSection(title: L10n.text("一键填入"), systemImage: "text.cursor") {
+        SettingRow(
+          title: L10n.text("在输入框旁显示填入按钮"),
+          detail: L10n.text("验证码到达后 60 秒内，光标所在的输入框旁会出现「填入」按钮，点一下逐字键入。需要辅助功能权限。"),
+          alignment: .center
+        ) {
+          Toggle("", isOn: Binding(
+            get: { state.settings.quickFillEnabled },
+            set: { state.setQuickFill(enabled: $0) }
+          ))
+          .toggleStyle(.switch)
+          .tint(Theme.controlOn)
+          .labelsHidden()
+        }
+
+        if state.settings.quickFillEnabled, !state.accessibilityTrusted {
+          Notice(
+            text: L10n.text("需要辅助功能权限。在「隐私与安全性 › 辅助功能」中打开 AutoCodeBar 后自动生效，不必重启。"),
+            tone: .warn
+          ) {
+            Button(L10n.text("打开系统设置")) { PrivacyPaneGuide.accessibility.present() }
+              .buttonStyle(SoftButtonStyle())
+          }
+        }
+
+        SettingRow(
+          title: L10n.text("填入后自动按回车"),
+          detail: L10n.text("适合输入完即提交的登录框。"),
+          alignment: .center
+        ) {
+          Toggle("", isOn: Binding(
+            get: { state.settings.quickFillPressesReturn },
+            set: { state.settings.quickFillPressesReturn = $0 }
+          ))
+          .toggleStyle(.switch)
+          .tint(Theme.controlOn)
+          .labelsHidden()
+          .disabled(!state.settings.quickFillEnabled)
+        }
+      }
+
       SettingsSection(title: L10n.text("软件更新"), systemImage: "arrow.triangle.2.circlepath") {
         SettingRow(
           title: L10n.text("自动检查更新"),

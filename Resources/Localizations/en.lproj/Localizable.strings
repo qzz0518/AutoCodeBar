@@ -86,9 +86,10 @@
 "历史只在内存" = "History stays in memory";
 "最多 20 条，退出应用即清空；剪贴板写入带机密标记。" = "Up to 20 entries, cleared when the app quits. Clipboard writes are marked confidential.";
 
-/* Full Disk Access guide card */
+/* Privacy pane guide card */
 "把 **AutoCodeBar** 拖进上方列表，然后打开它的开关" = "Drag **AutoCodeBar** into the list above, then turn on its switch";
 "已授权 — macOS 可能会要求重新打开 AutoCodeBar。" = "Granted — macOS may ask you to reopen AutoCodeBar.";
+"已授权，一键填入已可用。" = "Granted. Quick Fill is ready.";
 
 /* Settings shell */
 "通用" = "General";
@@ -168,3 +169,15 @@
 /* System notification */
 "已复制验证码 %@" = "Copied code %@";
 "来自 %@ · %@" = "From %@ · %@";
+
+/* Quick fill */
+"一键填入" = "Quick Fill";
+"在输入框旁显示填入按钮" = "Show a Fill button next to the input field";
+"验证码到达后 60 秒内，光标所在的输入框旁会出现「填入」按钮，点一下逐字键入。需要辅助功能权限。" = "For 60 seconds after a code arrives, a Fill button appears next to the focused input field. One click types the code. Requires Accessibility access.";
+"需要辅助功能权限。在「隐私与安全性 › 辅助功能」中打开 AutoCodeBar 后自动生效，不必重启。" = "Accessibility access is required. Turn on AutoCodeBar under Privacy & Security › Accessibility; it takes effect without relaunching.";
+"填入后自动按回车" = "Press Return after filling";
+"适合输入完即提交的登录框。" = "For sign-in forms that submit as soon as the code is entered.";
+"辅助功能" = "Accessibility";
+"「一键填入」把验证码键入当前输入框时使用；不开启该功能则用不到。" = "Used by Quick Fill to type the code into the focused field. Not needed otherwise.";
+"填入" = "Fill";
+"关闭" = "Dismiss";

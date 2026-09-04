@@ -1,3 +1,4 @@
+import ApplicationServices
 import Darwin
 import Foundation
 import UserNotifications
@@ -85,5 +86,10 @@ public enum PermissionProbe {
 
   public static func notificationAuthorization() async -> UNAuthorizationStatus {
     await UNUserNotificationCenter.current().notificationSettings().authorizationStatus
+  }
+
+  /// 辅助功能（AXIsProcessTrusted）。同步、无副作用、不弹窗，可在任意线程调用。
+  public nonisolated static func accessibility() -> Bool {
+    AXIsProcessTrusted()
   }
 }
