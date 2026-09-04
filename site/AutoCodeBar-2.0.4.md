@@ -1,3 +1,6 @@
+<!-- sparkle-sign-warning:
+IMPORTANT: This file was signed by Sparkle. Any modifications to this file requires updating signatures in appcasts that reference this file! This will involve re-running generate_appcast or sign_update.
+-->
 Quick Fill is here: one click types the code where you are, instead of switching back to press ⌘V.
 
 - **Quick Fill next to the input field**: for 60 seconds after a code arrives, a "Fill 482913" card floats next to the focused input field. One click types the code character by character, six-box code fields included. Off by default; turn it on under Settings › General. An optional "Press Return after filling" suits sign-in forms that submit right away.

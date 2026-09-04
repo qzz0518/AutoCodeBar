@@ -1,3 +1,6 @@
+<!-- sparkle-sign-warning:
+IMPORTANT: This file was signed by Sparkle. Any modifications to this file requires updating signatures in appcasts that reference this file! This will involve re-running generate_appcast or sign_update.
+-->
 新增「一键填入」：验证码到达后点一下就键入，不用再切回去 ⌘V。
 
 - **在输入框旁一键填入**：验证码到达后 60 秒内，光标所在的输入框旁会浮出一张「填入 482913」卡片，点一下逐字键入，六格分框的验证码也适用。默认关闭，在「设置 › 通用」里打开；另有「填入后自动按回车」可选，适合输入完即提交的登录框。
