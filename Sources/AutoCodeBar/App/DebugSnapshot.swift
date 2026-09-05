@@ -18,6 +18,8 @@ import AutoCodeBarCore
 ///   给了秒数则到点自动调用 `fill()`，等价于用户点了面板。
 /// - `AutoCodeBar --debug-present-guide fullDiskAccess|accessibility`
 ///   正常启动，2 秒后弹出对应面板的拖拽引导卡片，用来实机看卡片飞向系统设置窗口。
+/// - `AutoCodeBar --debug-open-settings [general|sources|rules|permissions|about]`
+///   正常启动，2 秒后直接打开设置窗口停在指定页；菜单栏图标可能被藏起来，不必去找它。
 @MainActor
 enum DebugSnapshot {
   /// 快照进行中。`ImageRenderer` 画不出 `Menu`，视图据此改用静态占位。
@@ -37,6 +39,7 @@ enum DebugSnapshot {
     case guideCardGranted = "guide-card-granted"
     case guideCardAccessibilityGranted = "guide-card-accessibility-granted"
     case popover = "popover"
+    case ignoredAppPicker = "ignored-app-picker"
 
     var size: NSSize {
       switch self {
@@ -47,8 +50,8 @@ enum DebugSnapshot {
         return NSSize(width: 920, height: 600)
       case .guideCard, .guideCardGranted, .guideCardAccessibilityGranted:
         return NSSize(width: 612, height: 140)
-      case .popover:
-        // 高度随历史条数变化，0 表示按内容自适应。
+      case .popover, .ignoredAppPicker:
+        // 高度随条数变化，0 表示按内容自适应。
         return NSSize(width: 320, height: 0)
       }
     }
@@ -101,7 +104,22 @@ enum DebugSnapshot {
     }
     scheduleQuickFillOffer(arguments, state: state)
     schedulePresentGuide(arguments)
+    scheduleOpenSettings(arguments)
     return false
+  }
+
+  /// 实机看设置窗：正常 `bootstrap()` 之后再开，页名同 `SettingsTab.rawValue`。
+  private static func scheduleOpenSettings(_ arguments: [String]) {
+    guard let index = arguments.firstIndex(of: "--debug-open-settings") else {
+      return
+    }
+    let tab = index + 1 < arguments.count
+      ? SettingsTab(rawValue: arguments[index + 1]) ?? .general
+      : .general
+    Task { @MainActor in
+      try? await Task.sleep(for: .seconds(2))
+      SettingsWindowController.shared.show(tab: tab)
+    }
   }
 
   /// 实机看引导卡片：正常 `bootstrap()` 之后再弹，免得和引导窗口抢先后。
@@ -259,6 +277,25 @@ enum DebugSnapshot {
     } else if window == .popover {
       PopoverView(state: state)
         .background(Color(nsColor: .windowBackgroundColor))
+    } else if window == .ignoredAppPicker {
+      // 弹出列表平时只活在 popover 里，截不到；这里把它单独摆出来核对样式。
+      SettingsChoiceList(
+        title: L10n.text("运行中的应用程序"),
+        selection: "",
+        choices: RunningApp.current(excluding: state.ownBundleIdentifier)
+          .map { SettingsChoice(id: $0.id, title: $0.name, image: $0.icon) },
+        identifier: "ignored.add",
+        disabledValues: Set(state.settings.ignoredNotificationApps.map { $0.lowercased() }),
+        footer: SettingsChoice(
+          id: IgnoredAppsList.finderAction,
+          title: L10n.text("手动从访达中选择…"),
+          symbol: "folder"
+        ),
+        select: { _ in },
+        dismiss: {}
+      )
+      .frame(width: window.size.width)
+      .background(Theme.raised)
     } else {
       PrivacyPaneGuide.debugCard(
         pane: window == .guideCardAccessibilityGranted ? .accessibility : .fullDiskAccess,

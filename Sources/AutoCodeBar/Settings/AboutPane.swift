@@ -37,7 +37,7 @@ struct AboutPane: View {
           HStack(spacing: 8) {
             StatusPill(text: versionText, tone: .neutral)
             Button(L10n.text("检查更新…")) { state.updater.checkForUpdates() }
-              .buttonStyle(SoftButtonStyle())
+              .buttonStyle(SettingsActionButtonStyle())
               .disabled(!state.updater.canCheckForUpdates)
           }
         }
@@ -59,13 +59,24 @@ struct AboutPane: View {
 
       SettingsSection(title: L10n.text("链接"), systemImage: "link") {
         SettingRow(title: L10n.text("源码与问题反馈"), detail: "GitHub", alignment: .center) {
-          Button(L10n.text("打开")) { AppLinks.open(AppLinks.github) }
-            .buttonStyle(SoftButtonStyle())
+          // 箭头说明这一下会离开应用；一整列都叫「打开」，旁白得听见打开的是哪个。
+          Button {
+            AppLinks.open(AppLinks.github)
+          } label: {
+            Label(L10n.text("打开"), systemImage: "arrow.up.right")
+          }
+          .buttonStyle(SettingsActionButtonStyle())
+          .accessibilityLabel(L10n.text("源码与问题反馈"))
         }
 
         SettingRow(title: L10n.text("作者"), detail: "X · @zerah_eth", alignment: .center) {
-          Button(L10n.text("打开")) { AppLinks.open(AppLinks.x) }
-            .buttonStyle(SoftButtonStyle())
+          Button {
+            AppLinks.open(AppLinks.x)
+          } label: {
+            Label(L10n.text("打开"), systemImage: "arrow.up.right")
+          }
+          .buttonStyle(SettingsActionButtonStyle())
+          .accessibilityLabel(Text(verbatim: "X · @zerah_eth"))
         }
       }
     }

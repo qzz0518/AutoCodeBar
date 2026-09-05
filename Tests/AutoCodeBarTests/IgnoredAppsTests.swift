@@ -72,7 +72,7 @@ struct IgnoredAppsTests {
   }
 }
 
-@Suite("加号菜单的来源")
+@Suite("添加应用列表的来源")
 @MainActor
 struct IgnoredAppSourcesTests {
   @Test("运行中的应用：只留 .regular、去掉自身、按名称排序、图标为 16pt")

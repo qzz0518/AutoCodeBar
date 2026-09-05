@@ -21,7 +21,7 @@ struct SourcesPane: View {
         tone: .info
       ) {
         Button(L10n.text("重新启动")) { Relauncher.relaunch() }
-          .buttonStyle(SoftButtonStyle())
+          .buttonStyle(SettingsActionButtonStyle())
       }
     }
   }
@@ -51,12 +51,12 @@ private struct SourceRow: View {
       SettingRow(title: kind.fullName, detail: kind.detail, alignment: .center) {
         HStack(spacing: 10) {
           StatusPill(text: pill.text, tone: pill.tone, pulses: pill.pulses)
-          Toggle("", isOn: Binding(
+          // 标题留给旁白：画出来的开关自己不说自己管的是哪一项。
+          Toggle(kind.fullName, isOn: Binding(
             get: { state.settings.isEnabled(kind) },
             set: { state.setSource(kind, enabled: $0) }
           ))
-          .toggleStyle(.switch)
-          .tint(Theme.controlOn)
+          .toggleStyle(DrawnSwitchToggleStyle())
           .labelsHidden()
         }
       }
@@ -65,12 +65,12 @@ private struct SourceRow: View {
       case .needsFullDiskAccess:
         Notice(text: L10n.text("需要完整磁盘访问。"), tone: .warn) {
           Button(L10n.text("打开系统设置")) { state.openFullDiskAccessSettings() }
-            .buttonStyle(SoftButtonStyle())
+            .buttonStyle(SettingsActionButtonStyle())
         }
       case .unavailable(let message), .failed(let message):
         Notice(text: message, tone: .bad) {
           Button(L10n.text("重试")) { state.retryFailedSources() }
-            .buttonStyle(SoftButtonStyle())
+            .buttonStyle(SettingsActionButtonStyle())
         }
       case .off, .starting, .running:
         EmptyView()

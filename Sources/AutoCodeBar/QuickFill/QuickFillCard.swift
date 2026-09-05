@@ -59,7 +59,7 @@ struct QuickFillCard: View {
     )
     .overlay(
       RoundedRectangle(cornerRadius: 12, style: .continuous)
-        .strokeBorder(Theme.stroke, lineWidth: 1)
+        .strokeBorder(Theme.stroke, lineWidth: Theme.Stroke.hairline)
     )
     // 阴影由 NSPanel 自己画（`hasShadow = true`）：窗口阴影按内容的透明形状生成，
     // 不会像自绘阴影那样被无边框面板的边界裁成一个硬边灰框。

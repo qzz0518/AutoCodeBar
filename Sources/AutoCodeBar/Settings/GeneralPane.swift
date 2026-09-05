@@ -15,7 +15,8 @@ struct GeneralPane: View {
           detail: L10n.text("开机后静默出现在菜单栏。"),
           alignment: .center
         ) {
-          Toggle("", isOn: Binding(
+          // 标题留给旁白：开关本身画出来了，可视界面里由左边那行字说明它管什么。
+          Toggle(L10n.text("登录时自动启动"), isOn: Binding(
             get: { launchAtLogin },
             set: { newValue in
               launchAtLogin = newValue
@@ -23,8 +24,7 @@ struct GeneralPane: View {
               launchAtLogin = LaunchAtLogin.isEnabled
             }
           ))
-          .toggleStyle(.switch)
-          .tint(Theme.controlOn)
+          .toggleStyle(DrawnSwitchToggleStyle())
           .labelsHidden()
         }
 
@@ -39,12 +39,11 @@ struct GeneralPane: View {
           detail: L10n.text("横幅显示验证码与来源。"),
           alignment: .center
         ) {
-          Toggle("", isOn: Binding(
+          Toggle(L10n.text("显示系统通知"), isOn: Binding(
             get: { state.settings.showCopyNotification },
             set: { state.settings.showCopyNotification = $0 }
           ))
-          .toggleStyle(.switch)
-          .tint(Theme.controlOn)
+          .toggleStyle(DrawnSwitchToggleStyle())
           .labelsHidden()
         }
 
@@ -53,12 +52,11 @@ struct GeneralPane: View {
           detail: L10n.text("约 15 秒后自动隐藏。"),
           alignment: .center
         ) {
-          Toggle("", isOn: Binding(
+          Toggle(L10n.text("在菜单栏短暂显示验证码"), isOn: Binding(
             get: { state.settings.showCodeInMenuBar },
             set: { state.settings.showCodeInMenuBar = $0 }
           ))
-          .toggleStyle(.switch)
-          .tint(Theme.controlOn)
+          .toggleStyle(DrawnSwitchToggleStyle())
           .labelsHidden()
         }
       }
@@ -69,12 +67,11 @@ struct GeneralPane: View {
           detail: L10n.text("验证码到达后 60 秒内，光标所在的输入框旁会出现「填入」按钮，点一下逐字键入。需要辅助功能权限。"),
           alignment: .center
         ) {
-          Toggle("", isOn: Binding(
+          Toggle(L10n.text("在输入框旁显示填入按钮"), isOn: Binding(
             get: { state.settings.quickFillEnabled },
             set: { state.setQuickFill(enabled: $0) }
           ))
-          .toggleStyle(.switch)
-          .tint(Theme.controlOn)
+          .toggleStyle(DrawnSwitchToggleStyle())
           .labelsHidden()
         }
 
@@ -84,7 +81,7 @@ struct GeneralPane: View {
             tone: .warn
           ) {
             Button(L10n.text("打开系统设置")) { PrivacyPaneGuide.accessibility.present() }
-              .buttonStyle(SoftButtonStyle())
+              .buttonStyle(SettingsActionButtonStyle())
           }
         }
 
@@ -93,12 +90,11 @@ struct GeneralPane: View {
           detail: L10n.text("适合输入完即提交的登录框。"),
           alignment: .center
         ) {
-          Toggle("", isOn: Binding(
+          Toggle(L10n.text("填入后自动按回车"), isOn: Binding(
             get: { state.settings.quickFillPressesReturn },
             set: { state.settings.quickFillPressesReturn = $0 }
           ))
-          .toggleStyle(.switch)
-          .tint(Theme.controlOn)
+          .toggleStyle(DrawnSwitchToggleStyle())
           .labelsHidden()
           .disabled(!state.settings.quickFillEnabled)
         }
@@ -110,12 +106,11 @@ struct GeneralPane: View {
           detail: L10n.text("每天检查一次，由 Sparkle 安全下载并安装。"),
           alignment: .center
         ) {
-          Toggle("", isOn: Binding(
+          Toggle(L10n.text("自动检查更新"), isOn: Binding(
             get: { state.updater.automaticallyChecksForUpdates },
             set: { state.updater.automaticallyChecksForUpdates = $0 }
           ))
-          .toggleStyle(.switch)
-          .tint(Theme.controlOn)
+          .toggleStyle(DrawnSwitchToggleStyle())
           .labelsHidden()
         }
 
@@ -125,7 +120,7 @@ struct GeneralPane: View {
           alignment: .center
         ) {
           Button(L10n.text("检查更新…")) { state.updater.checkForUpdates() }
-            .buttonStyle(SoftButtonStyle())
+            .buttonStyle(SettingsActionButtonStyle())
             .disabled(!state.updater.canCheckForUpdates)
         }
       }
@@ -137,7 +132,7 @@ struct GeneralPane: View {
           alignment: .center
         ) {
           Button(L10n.text("重新运行")) { state.restartOnboarding() }
-            .buttonStyle(SoftButtonStyle())
+            .buttonStyle(SettingsActionButtonStyle())
         }
       }
     }

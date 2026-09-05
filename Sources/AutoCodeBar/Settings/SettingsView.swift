@@ -83,10 +83,15 @@ struct SettingsView: View {
           .frame(maxWidth: .infinity, alignment: .leading)
         }
         .scrollBounceBehavior(.basedOnSize)
+        // 换页要从头看起。少了这两笔，AppKit 会把新页里的首个响应者滚进视野，
+        // 页标题被顶到窗口上沿之外。
+        .defaultScrollAnchor(.top)
+        .id(tab)
       }
     }
     .frame(width: 800, height: 580)
     .background(Theme.raised)
+    .modifier(SettingsFocusScope())
     .onAppear { state.refreshPermissions() }
     .onReceive(NotificationCenter.default.publisher(
       for: NSApplication.didBecomeActiveNotification
@@ -123,6 +128,7 @@ private struct SettingsNavItem: View {
   let isSelected: Bool
   let action: () -> Void
   @State private var hovering = false
+  @FocusState private var focused: Bool
 
   var body: some View {
     Button(action: action) {
@@ -143,9 +149,14 @@ private struct SettingsNavItem: View {
       )
       .contentShape(Rectangle())
     }
-    .buttonStyle(.plain)
+    .buttonStyle(PlainPressButtonStyle(staticFeedback: true))
+    .focused($focused)
     .focusEffectDisabled()
+    .modifier(SettingsFocusRing(focused: focused, radius: Theme.Radius.control))
     .onHover { hovering = $0 }
+    .accessibilityAddTraits(isSelected ? [.isSelected] : [])
+    .accessibilityRemoveTraits(isSelected ? [] : [.isSelected])
+    .accessibilityIdentifier("settings." + tab.rawValue)
   }
 }
 

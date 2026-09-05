@@ -88,7 +88,7 @@ struct RulesPane: View {
         validate()
         runTest()
       }
-      .buttonStyle(SoftButtonStyle())
+      .buttonStyle(SettingsActionButtonStyle())
     }
     .onAppear {
       guard !didLoad else {

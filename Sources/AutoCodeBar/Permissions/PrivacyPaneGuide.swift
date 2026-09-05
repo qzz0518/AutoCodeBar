@@ -475,7 +475,7 @@ private struct GuideCard: View {
     )
     .overlay(
       RoundedRectangle(cornerRadius: 24, style: .continuous)
-        .strokeBorder(Color.primary.opacity(0.08), lineWidth: 1)
+        .strokeBorder(Color.primary.opacity(0.08), lineWidth: Theme.Stroke.hairline)
     )
     .shadow(color: .black.opacity(0.28), radius: 18, y: 6)
     .padding(Self.shadowPad)

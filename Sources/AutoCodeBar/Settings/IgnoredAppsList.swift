@@ -8,13 +8,21 @@ import AutoCodeBarCore
 struct IgnoredAppsList: View {
   let state: AppState
 
+  /// 一屏最多露六行，再多就滚——这块列表只是设置页里的一段，不是主角。
+  private static let visibleRows = 6
+
   private var apps: [String] {
     state.settings.ignoredNotificationApps
   }
 
-  /// 空态是一句话，装不下也不需要滚动；有内容时到 200pt 封顶后开始滚。
+  /// 「手动从访达中选择…」那一项的 ID。不是合法的 Bundle ID，不会和任何应用撞车。
+  static let finderAction = "choose-from-finder"
+
+  /// 空态是一句话，装不下也不需要滚动；48 加上容器四周各 4 的内缩正好 56。
   private var listHeight: CGFloat {
-    apps.isEmpty ? 56 : min(CGFloat(apps.count) * IgnoredAppRow.height, 200)
+    apps.isEmpty
+      ? 48
+      : IgnoredAppRow.height * CGFloat(min(apps.count, Self.visibleRows))
   }
 
   var body: some View {
@@ -24,16 +32,16 @@ struct IgnoredAppsList: View {
           .font(Theme.heading)
           .foregroundStyle(Theme.ink)
 
-        list
+        well
 
-        HStack(spacing: Theme.Space.snug) {
+        HStack(alignment: .center, spacing: Theme.Space.snug) {
           AddIgnoredAppButton(state: state)
           Spacer(minLength: Theme.Space.tight)
           Button(L10n.text("恢复默认")) {
             state.restoreDefaultIgnoredApps()
           }
           .buttonStyle(.plain)
-          .font(.system(size: 11))
+          .font(Theme.caption)
           .foregroundStyle(Theme.inkSecondary)
         }
 
@@ -45,39 +53,43 @@ struct IgnoredAppsList: View {
     }
   }
 
-  private var list: some View {
-    ScrollView {
+  /// 行有自己的圆角，容器就得比它更圆一档：8 的行缩进 4，外圈 12 才是同心的。
+  private var well: some View {
+    Group {
       if apps.isEmpty {
         Text(L10n.text("不忽略任何应用"))
           .font(Theme.caption)
           .foregroundStyle(Theme.inkTertiary)
           .frame(maxWidth: .infinity)
-          .frame(height: 56)
+          .frame(height: listHeight)
       } else {
-        LazyVStack(spacing: 0) {
-          ForEach(apps, id: \.self) { bundleIdentifier in
-            IgnoredAppRow(bundleIdentifier: bundleIdentifier) {
-              state.removeIgnoredApp(bundleIdentifier)
+        ScrollView {
+          LazyVStack(spacing: 0) {
+            ForEach(apps, id: \.self) { bundleIdentifier in
+              IgnoredAppRow(bundleIdentifier: bundleIdentifier) {
+                state.removeIgnoredApp(bundleIdentifier)
+              }
             }
           }
         }
+        .scrollBounceBehavior(.basedOnSize)
+        .frame(height: listHeight)
       }
     }
-    .scrollBounceBehavior(.basedOnSize)
-    .frame(height: listHeight)
+    .padding(Theme.Space.hairGap)
     .background(
       Theme.surface,
-      in: RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous)
+      in: RoundedRectangle(cornerRadius: Theme.Radius.small + Theme.Space.hairGap, style: .continuous)
     )
     .overlay(
-      RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous)
-        .strokeBorder(Theme.stroke, lineWidth: 1)
+      RoundedRectangle(cornerRadius: Theme.Radius.small + Theme.Space.hairGap, style: .continuous)
+        .strokeBorder(Theme.stroke, lineWidth: Theme.Stroke.hairline)
     )
   }
 }
 
 private struct IgnoredAppRow: View {
-  static let height: CGFloat = 36
+  static let height: CGFloat = 38
 
   let bundleIdentifier: String
   let remove: () -> Void
@@ -91,19 +103,21 @@ private struct IgnoredAppRow: View {
       Image(nsImage: info.icon)
         .resizable()
         .interpolation(.high)
-        .frame(width: 20, height: 20)
+        .frame(width: 24, height: 24)
+        .accessibilityHidden(true)
 
       if let name = info.name {
-        Text(name)
-          .font(Theme.body)
-          .foregroundStyle(Theme.ink)
-          .lineLimit(1)
-        Spacer(minLength: Theme.Space.tight)
-        Text(bundleIdentifier)
-          .font(Theme.caption)
-          .foregroundStyle(Theme.inkTertiary)
-          .lineLimit(1)
-          .truncationMode(.middle)
+        VStack(alignment: .leading, spacing: 0) {
+          Text(name)
+            .font(Theme.body)
+            .foregroundStyle(Theme.ink)
+            .lineLimit(1)
+          Text(bundleIdentifier)
+            .font(Theme.micro)
+            .foregroundStyle(Theme.inkTertiary)
+            .lineLimit(1)
+            .truncationMode(.middle)
+        }
       } else {
         // 装不到应用就没有名字可显示，Bundle ID 顶上来当标题，用等宽字体
         // 说明这是一串标识符而不是应用名。
@@ -112,14 +126,16 @@ private struct IgnoredAppRow: View {
           .foregroundStyle(Theme.ink)
           .lineLimit(1)
           .truncationMode(.middle)
-        Spacer(minLength: Theme.Space.tight)
       }
+
+      Spacer(minLength: Theme.Space.tight)
 
       Button(action: remove) {
         Image(systemName: "xmark.circle.fill")
       }
-      .buttonStyle(IconButtonStyle(size: 24))
+      .buttonStyle(IconButtonStyle(size: 24, staticFeedback: true))
       .help(L10n.text("移除"))
+      .accessibilityLabel(L10n.format("移除 %@", info.name ?? bundleIdentifier))
       .opacity(hovering ? 1 : 0.55)
     }
     .padding(.horizontal, 10)
@@ -129,54 +145,70 @@ private struct IgnoredAppRow: View {
         .fill(hovering ? Theme.hover : Color.clear)
     )
     .onHover { hovering = $0 }
+    .accessibilityElement(children: .contain)
   }
 }
 
-/// 加号菜单：运行中的应用直接挑，其余的从访达里选。
+/// 加号按钮：点开一张自绘的弹出列表，运行中的应用直接挑，其余的从访达里选。
 private struct AddIgnoredAppButton: View {
   let state: AppState
 
   @State private var running: [RunningApp] = []
+  @State private var expanded = false
+  @State private var pendingFinder = false
+  @FocusState private var focused: Bool
 
   var body: some View {
-    Menu {
-      Menu(L10n.text("运行中的应用程序")) {
-        ForEach(running) { app in
-          Button {
-            state.addIgnoredApps([app.id])
-          } label: {
-            Label {
-              Text(app.name)
-            } icon: {
-              Image(nsImage: app.icon)
-            }
-          }
-          .disabled(state.settings.ignoredNotificationApps.contains(app.id))
-        }
-      }
-      Divider()
-      Button(L10n.text("手动从访达中选择…")) {
-        chooseFromFinder()
-      }
+    Button {
+      // 每次点开都重扫：列出来的必须是此刻真的在运行的那些应用。
+      running = RunningApp.current(excluding: state.ownBundleIdentifier)
+      expanded.toggle()
     } label: {
       Label(L10n.text("添加应用"), systemImage: "plus")
     }
-    // 面板本身就是 `Theme.sunken`，按钮再用同一块底色就消失了；换成
-    // 列表那层 `Theme.surface`，两者在深浅两套外观下都还分得开。
-    .menuStyle(.button)
-    .buttonStyle(SoftButtonStyle(tone: Theme.surface))
-    .menuIndicator(.hidden)
-    .fixedSize()
-    // 菜单没有「即将打开」的回调，但指针一定先经过按钮：进入时重扫一遍，
-    // 弹出来的子菜单就是当下真正在运行的那些应用。
-    .onHover { inside in
-      if inside {
-        running = RunningApp.current(excluding: state.ownBundleIdentifier)
+    .buttonStyle(SettingsActionButtonStyle())
+    .focused($focused)
+    .focusEffectDisabled()
+    .modifier(SettingsFocusRing(focused: focused))
+    .popover(isPresented: $expanded, arrowEdge: .bottom) {
+      SettingsChoiceList(
+        title: L10n.text("运行中的应用程序"),
+        selection: "",
+        choices: running.map { SettingsChoice(id: $0.id, title: $0.name, image: $0.icon) },
+        identifier: "ignored.add",
+        // 列表项的 ID 一律小写；旧版本手输进来的条目可能还带大写，比对前先压平。
+        disabledValues: Set(state.settings.ignoredNotificationApps.map { $0.lowercased() }),
+        footer: SettingsChoice(
+          id: IgnoredAppsList.finderAction,
+          title: L10n.text("手动从访达中选择…"),
+          symbol: "folder"
+        )
+      ) { id in
+        if id == IgnoredAppsList.finderAction {
+          pendingFinder = true
+        } else {
+          state.addIgnoredApps([id])
+        }
+        expanded = false
+      } dismiss: {
+        expanded = false
+      }
+      .frame(width: 320)
+      // 访达面板要等这张 popover 真的收起来再开：popover 还在时跑模态循环会卡住。
+      .onDisappear {
+        guard pendingFinder else {
+          return
+        }
+        pendingFinder = false
+        chooseFromFinder()
       }
     }
-    .onAppear {
-      running = RunningApp.current(excluding: state.ownBundleIdentifier)
+    .onChange(of: expanded) { _, open in
+      if !open {
+        focused = true
+      }
     }
+    .accessibilityIdentifier("ignored.add")
   }
 
   private func chooseFromFinder() {
@@ -197,7 +229,7 @@ private struct AddIgnoredAppButton: View {
   }
 }
 
-/// 菜单里的一项：一个正在运行、且在程序坞里露面的应用。
+/// 列表里的一项：一个正在运行、且在程序坞里露面的应用。
 struct RunningApp: Identifiable {
   /// 小写 Bundle ID，同时充当去重的键。
   let id: String
@@ -210,7 +242,7 @@ struct RunningApp: Identifiable {
     var result: [RunningApp] = []
     for application in NSWorkspace.shared.runningApplications {
       // `.regular` 之外是后台代理和菜单栏小工具，它们不发通知给用户看，
-      // 列出来只会把菜单撑成一屏进程表。
+      // 列出来只会把列表撑成一屏进程表。
       guard application.activationPolicy == .regular,
             let identifier = application.bundleIdentifier?.lowercased(),
             identifier != own,
@@ -221,7 +253,7 @@ struct RunningApp: Identifiable {
         RunningApp(
           id: identifier,
           name: application.localizedName ?? identifier,
-          icon: menuIcon(for: application)
+          icon: listIcon(for: application)
         )
       )
     }
@@ -231,7 +263,7 @@ struct RunningApp: Identifiable {
   /// 改的是副本：`NSRunningApplication.icon` 是共享实例，就地设尺寸会波及
   /// 其他画到这张图的地方。
   @MainActor
-  private static func menuIcon(for application: NSRunningApplication) -> NSImage {
+  private static func listIcon(for application: NSRunningApplication) -> NSImage {
     let source = application.icon ?? NSWorkspace.shared.icon(for: .applicationBundle)
     guard let copy = source.copy() as? NSImage else {
       return source

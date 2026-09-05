@@ -21,7 +21,8 @@ final class SettingsWindowController {
     self.state = state
   }
 
-  func show() {
+  /// `tab` 只在窗口第一次建出来时生效；已经开着的窗口保持用户停在的那一页。
+  func show(tab: SettingsTab = .general) {
     guard let state else {
       return
     }
@@ -32,7 +33,7 @@ final class SettingsWindowController {
       return
     }
 
-    let controller = NSHostingController(rootView: SettingsView(state: state))
+    let controller = NSHostingController(rootView: SettingsView(state: state, initialTab: tab))
     let window = NSWindow(contentViewController: controller)
     window.title = ""
     window.titleVisibility = .hidden

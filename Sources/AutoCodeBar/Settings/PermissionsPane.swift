@@ -27,7 +27,7 @@ struct PermissionsPane: View {
           granted: fdaGranted
         ) {
           Button(L10n.text("打开系统设置")) { state.openFullDiskAccessSettings() }
-            .buttonStyle(SoftButtonStyle())
+            .buttonStyle(SettingsActionButtonStyle())
         }
 
         PermissionRow(
@@ -40,10 +40,10 @@ struct PermissionsPane: View {
         ) {
           if state.notificationAuth == .denied {
             Button(L10n.text("打开通知设置")) { SystemSettingsLinks.openNotifications() }
-              .buttonStyle(SoftButtonStyle())
+              .buttonStyle(SettingsActionButtonStyle())
           } else {
             Button(L10n.text("允许…")) { state.requestNotificationAuthorization() }
-              .buttonStyle(SoftButtonStyle())
+              .buttonStyle(SettingsActionButtonStyle())
           }
         }
 
@@ -55,7 +55,7 @@ struct PermissionsPane: View {
           missingTone: quickFillEnabled ? .warn : .neutral
         ) {
           Button(L10n.text("打开系统设置")) { PrivacyPaneGuide.accessibility.present() }
-            .buttonStyle(SoftButtonStyle())
+            .buttonStyle(SettingsActionButtonStyle())
         }
       }
 
@@ -64,7 +64,7 @@ struct PermissionsPane: View {
         tone: .info
       ) {
         Button(L10n.text("重新启动")) { Relauncher.relaunch() }
-          .buttonStyle(SoftButtonStyle())
+          .buttonStyle(SettingsActionButtonStyle())
       }
     }
   }
