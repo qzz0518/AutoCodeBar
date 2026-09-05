@@ -46,11 +46,23 @@ private struct SourceRow: View {
     }
   }
 
+  /// 药丸可能出现的全部文案。槽位按其中最宽的一条预留，状态切换时药丸变宽变窄，
+  /// 左边说明文字的换行位置都不会跟着挪。
+  private static let pillTexts: [String] = [
+    L10n.text("已关闭"), L10n.text("启动中"), L10n.text("正在监听"),
+    L10n.text("需要授权"), L10n.text("不可用"), L10n.text("失败"),
+  ]
+
   var body: some View {
     VStack(alignment: .leading, spacing: 10) {
       SettingRow(title: kind.fullName, detail: kind.detail, alignment: .center) {
         HStack(spacing: 10) {
-          StatusPill(text: pill.text, tone: pill.tone, pulses: pill.pulses)
+          ZStack(alignment: .trailing) {
+            ForEach(Self.pillTexts, id: \.self) { text in
+              StatusPill(text: text).hidden()
+            }
+            StatusPill(text: pill.text, tone: pill.tone, pulses: pill.pulses)
+          }
           // 标题留给旁白：画出来的开关自己不说自己管的是哪一项。
           Toggle(kind.fullName, isOn: Binding(
             get: { state.settings.isEnabled(kind) },
