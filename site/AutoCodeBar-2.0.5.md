@@ -1,3 +1,6 @@
+<!-- sparkle-sign-warning:
+IMPORTANT: This file was signed by Sparkle. Any modifications to this file requires updating signatures in appcasts that reference this file! This will involve re-running generate_appcast or sign_update.
+-->
 Adding an ignored app now uses a pop-up list, and the Settings window's buttons, switches and fields were tuned up.
 
 - **Pop-up app picker**: "Add App" opens a "Running Applications" list with app icons; apps already on the ignore list are checked and greyed out; move with ↑↓, confirm with Return, close with Esc; "Choose from Finder…" stays at the bottom. Rows now show the app name with its bundle identifier underneath.

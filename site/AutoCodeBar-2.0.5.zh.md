@@ -1,3 +1,6 @@
+<!-- sparkle-sign-warning:
+IMPORTANT: This file was signed by Sparkle. Any modifications to this file requires updating signatures in appcasts that reference this file! This will involve re-running generate_appcast or sign_update.
+-->
 忽略应用改为弹出列表选择，设置窗口的按钮、开关和输入框也统一了一遍。
 
 - **添加忽略应用改为弹出列表**：点「添加应用」直接弹出「运行中的应用程序」列表，带应用图标；已在忽略列表里的应用打勾置灰；↑↓ 选择、回车确认、Esc 关闭；底部保留「手动从访达中选择…」。列表行改为两行，名称下方显示 Bundle ID。
