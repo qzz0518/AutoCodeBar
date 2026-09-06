@@ -13,9 +13,11 @@ NOTARIZE="${NOTARIZE:-1}"
 GENERATE_APPCAST="${GENERATE_APPCAST:-1}"
 REQUIRE_TAG="${REQUIRE_TAG:-1}"
 REQUIRE_CLEAN="${REQUIRE_CLEAN:-1}"
-# Name of the `notarytool store-credentials` profile in the login keychain.
-# Override it if your profile is stored under a different name.
-NOTARY_PROFILE="${NOTARY_PROFILE:-AutoCodeBar-Notary}"
+# The `notarytool store-credentials` profile to submit with. Apple issues
+# notarization credentials per Apple ID and team, not per app, so one stored
+# profile covers everything team H2P566W3PA signs — this Mac keeps it under
+# `Charker-Notary`, the name of the first app that needed it.
+NOTARY_PROFILE="${NOTARY_PROFILE:-Charker-Notary}"
 APP="$ROOT/dist/AutoCodeBar.app"
 APP_ZIP="$ROOT/dist/AutoCodeBar-$VERSION.app.zip"
 DMG="$ROOT/dist/AutoCodeBar-$VERSION.dmg"
