@@ -34,6 +34,15 @@ if [ "$REQUIRE_TAG" = "1" ]; then
 		exit 1
 	fi
 fi
+# The feed step needs both notes; fail now rather than after notarization.
+if [ "$GENERATE_APPCAST" = "1" ]; then
+	for NOTES in "$ROOT/Resources/ReleaseNotes/$VERSION.md" "$ROOT/Resources/ReleaseNotes/$VERSION.zh.md"; do
+		if [ ! -f "$NOTES" ]; then
+			echo "missing ${NOTES#$ROOT/}" >&2
+			exit 1
+		fi
+	done
+fi
 
 IDENTITY="${IDENTITY:-$(security find-identity -v -p codesigning 2>/dev/null | awk '/Developer ID Application:/ {print $2; exit}')}"
 if [ -z "$IDENTITY" ]; then
@@ -96,7 +105,8 @@ else
 	echo "warning: NOTARIZE=0; this DMG is not publishable" >&2
 fi
 
-shasum -a 256 "$DMG" > "$DMG.sha256"
+# Hash and file name only: the uploaded checksum must not carry this Mac's path.
+(cd "$(dirname "$DMG")" && shasum -a 256 "$(basename "$DMG")") > "$DMG.sha256"
 
 if [ "$GENERATE_APPCAST" = "1" ]; then
 	if [ "$NOTARIZE" != "1" ]; then
@@ -113,26 +123,33 @@ if [ "$GENERATE_APPCAST" = "1" ]; then
 	if [ -f "$ROOT/site/appcast.xml" ]; then
 		cp "$ROOT/site/appcast.xml" "$UPDATES_DIR/appcast.xml"
 	fi
-	# The release notes are signed alongside the DMG, so the feed can point at
-	# them without giving an attacker a place to inject unsigned content.
-	# AutoCodeBar-<version>.md is the default (English) text; two-letter
-	# language variants such as AutoCodeBar-<version>.zh.md become
-	# xml:lang entries that Sparkle picks by the user's language.
-	for NOTES in "$ROOT/site/AutoCodeBar-$VERSION.md" "$ROOT/site/AutoCodeBar-$VERSION".??.md; do
-		[ -f "$NOTES" ] && cp "$NOTES" "$UPDATES_DIR/"
-	done
 	cp "$DMG" "$UPDATES_DIR/"
-	# One DMG per run and no delta packages: every release lives under its
-	# own tag directory, and deltas would need their own uploaded assets.
+	# Styled HTML from Resources/ReleaseNotes/<version>.md and <version>.zh.md:
+	# `AutoCodeBar-<version>.html` is the English default, `.zh.html` becomes
+	# the `xml:lang="zh"` link (generate_appcast only recognises two-letter
+	# codes). Full documents, so they are linked and signed rather than
+	# embedded, and an attacker has no unsigned content to inject.
+	swift "$ROOT/script/release_notes.swift" sparkle \
+		"$VERSION" "$BUILD_NUMBER" "$(date +%Y-%m-%d)" "$UPDATES_DIR"
+	# Notes are served from GitHub Pages next to the appcast, not from the
+	# release assets. One DMG per run and no delta packages: every release
+	# lives under its own tag directory, and deltas would need their own
+	# uploaded assets. Every version is kept: the history page is built from
+	# this feed. "Version History" in Sparkle's up-to-date alert opens it.
 	"$SPARKLE_TOOLS/generate_appcast" \
-		--maximum-deltas 0 \
 		--download-url-prefix "https://github.com/qzz0518/AutoCodeBar/releases/download/$TAG/" \
 		--release-notes-url-prefix "https://qzz0518.github.io/AutoCodeBar/" \
+		--full-release-notes-url "https://qzz0518.github.io/AutoCodeBar/updates.html" \
+		--maximum-deltas 0 \
+		--maximum-versions 0 \
 		"$UPDATES_DIR"
+	swift "$ROOT/script/release_notes.swift" history \
+		"$UPDATES_DIR/appcast.xml" "$UPDATES_DIR/updates.html"
 fi
 
 echo "release artifact: $DMG"
 echo "checksum: $DMG.sha256"
 if [ -f "$UPDATES_DIR/appcast.xml" ]; then
 	echo "signed appcast: $UPDATES_DIR/appcast.xml"
+	echo "publish: copy appcast.xml, AutoCodeBar-$VERSION*.html and updates.html from $UPDATES_DIR to site/"
 fi

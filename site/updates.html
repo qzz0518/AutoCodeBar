@@ -1,235 +1,243 @@
 <!doctype html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AutoCodeBar 版本历史</title>
-    <meta name="description" content="AutoCodeBar 的版本更新记录。">
-    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#101113" media="(prefers-color-scheme: dark)">
-    <link rel="canonical" href="https://qzz0518.github.io/AutoCodeBar/updates.html">
-    <style>
-      :root {
-        color-scheme: light dark;
-        --background: #ffffff;
-        --ink: #151517;
-        --text: #343438;
-        --muted: #717178;
-        --line: #dedee3;
-        --soft: #f1f1f3;
-        --accent: #0f8175;
-      }
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AutoCodeBar 版本历史 · Version History</title>
+<meta name="description" content="AutoCodeBar 的版本更新记录。AutoCodeBar release notes and version history.">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1e1e20" media="(prefers-color-scheme: dark)">
+<link rel="canonical" href="https://qzz0518.github.io/AutoCodeBar/updates.html">
+<script>
+(() => {
+  const root = document.documentElement;
+  const param = new URLSearchParams(location.search).get('lang');
+  let stored = null;
+  try { stored = localStorage.getItem('release-notes-lang'); } catch (_) {}
+  const system = (navigator.languages || [navigator.language || '']).some((l) => /^zh/i.test(l)) ? 'zh' : 'en';
+  root.dataset.lang = (param === 'en' || param === 'zh') ? param : (stored || system);
+  root.lang = root.dataset.lang === 'en' ? 'en' : 'zh-CN';
+  window.switchLanguage = () => {
+    const next = root.dataset.lang === 'en' ? 'zh' : 'en';
+    root.dataset.lang = next;
+    root.lang = next === 'en' ? 'en' : 'zh-CN';
+    try { localStorage.setItem('release-notes-lang', next); } catch (_) {}
+  };
+})();
+</script>
+<style>
+:root {
+  color-scheme: light dark;
+  --bg: #ffffff; --ink: #1d1d1f; --text: #3a3a3c; --muted: #86868b;
+  --line: #e5e5ea; --soft: #f2f2f5;
+  --new: #0f8175; --improved: #6a4fd0; --fixed: #1c8a4a; --other: #6e6e73;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1e1e20; --ink: #f5f5f7; --text: #d1d1d6; --muted: #8e8e93;
+    --line: #38383c; --soft: #2a2a2e;
+    --new: #54d6c8; --improved: #b4a2ff; --fixed: #62d28c; --other: #aeaeb2;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+a { color: var(--new); text-underline-offset: 3px; }
+h1, h2, h3 { margin: 0; }
+.version { color: var(--ink); font-weight: 700; letter-spacing: -0.015em; }
+.meta { margin: 2px 0 0; color: var(--muted); font-variant-numeric: tabular-nums; }
+.summary { margin: 12px 0 0; color: var(--ink); }
+section { --tone: var(--other); }
+section.new { --tone: var(--new); }
+section.improved { --tone: var(--improved); }
+section.fixed { --tone: var(--fixed); }
+.tag {
+  display: inline-block;
+  padding: 1px 9px 2px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--tone) 14%, transparent);
+  color: var(--tone);
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  line-height: 18px;
+}
+section ul, section ol { margin: 0; padding: 0; list-style: none; }
+section ol { counter-reset: item; }
+section li { position: relative; padding-left: 16px; }
+section ul > li::before {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 0.62em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--tone);
+}
+section ol > li { counter-increment: item; padding-left: 20px; }
+section ol > li::before {
+  content: counter(item) ".";
+  position: absolute;
+  left: 0;
+  color: var(--tone);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+section p { margin: 8px 0 0; }
+code {
+  padding: 0 4px;
+  border-radius: 4px;
+  background: var(--soft);
+  font: 0.9em/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+body { font-size: 16px; line-height: 1.7; }
+.page { width: min(720px, calc(100% - 44px)); margin-inline: auto; }
+.top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding-block: 24px; }
+.brand { color: var(--ink); font-size: 20px; font-weight: 700; letter-spacing: -0.03em; text-decoration: none; }
+.top nav { display: flex; gap: 18px; font-size: 14px; }
+.top nav a, .switch { color: var(--muted); text-decoration: none; }
+.top nav a:hover, .switch:hover { color: var(--ink); }
+.switch { padding: 0; border: 0; background: none; font: inherit; cursor: pointer; }
+main { padding-block: 40px 72px; }
+.title { color: var(--ink); font-size: clamp(40px, 9vw, 60px); line-height: 1.05; letter-spacing: -0.05em; }
+.intro { margin: 16px 0 48px; color: var(--muted); font-size: 18px; }
+.release { padding-block: 36px 40px; border-top: 1px solid var(--line); scroll-margin-top: 24px; }
+.heading { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.heading .version { font-size: 28px; line-height: 1.2; letter-spacing: -0.03em; }
+.heading .version a { color: inherit; text-decoration: none; }
+.current {
+  padding: 1px 10px 2px;
+  border-radius: 999px;
+  background: var(--new);
+  color: var(--bg);
+  font-size: 12px;
+  font-weight: 700;
+}
+.release .meta { font-size: 14px; }
+.release .summary { font-size: 17px; }
+.release section { margin-top: 22px; }
+.release h3 { margin-bottom: 8px; }
+.release .tag { font-size: 12px; line-height: 20px; }
+.release li { margin: 7px 0; padding-left: 18px; }
+footer { padding-block: 22px 42px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+footer a { color: inherit; }
+:focus-visible { outline: 2px solid var(--new); outline-offset: 3px; }
+html:not([data-lang="en"]) [lang="en"].i18n,
+html[data-lang="en"] [lang="zh-Hans"].i18n { display: none; }
+@media (max-width: 520px) {
+  main { padding-top: 28px; }
+  .intro { margin-bottom: 36px; }
+  .release { padding-block: 28px 32px; }
+  .heading .version { font-size: 24px; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+<header class="top">
+<a class="brand" href="./">AutoCodeBar</a>
+<nav>
+<button class="switch" type="button" onclick="switchLanguage()"><span class="i18n" lang="zh-Hans">English</span><span class="i18n" lang="en">中文</span></button>
+<a href="./"><span class="i18n" lang="zh-Hans">返回首页</span><span class="i18n" lang="en">Home</span></a>
+</nav>
+</header>
+<main>
+<h1 class="i18n title" lang="zh-Hans">版本历史</h1><h1 class="i18n title" lang="en">Version History</h1>
+<p class="i18n intro" lang="zh-Hans">AutoCodeBar 每个版本的变化。</p><p class="i18n intro" lang="en">What changed in each version of AutoCodeBar.</p>
+<article class="release" id="v2.0.6">
+<div class="i18n" lang="en">
+<div class="heading"><h2 class="version"><a href="#v2.0.6">Version 2.0.6</a></h2><span class="current">Current Version</span></div>
+<p class="meta">Build 7 · <time datetime="2026-09-06">September 6, 2026</time></p>
+<p class="summary">Fixes the Sources page re-wrapping its descriptions when a source's status changes.</p><section class="other"><ul><li><strong>Steady Sources layout</strong>: the description text no longer re-wraps when the status pill switches between Watching and Off.</li></ul></section>
+</div>
+<div class="i18n" lang="zh-Hans">
+<div class="heading"><h2 class="version"><a href="#v2.0.6">Version 2.0.6</a></h2><span class="current">当前版本</span></div>
+<p class="meta">Build 7 · <time datetime="2026-09-06">2026年9月6日</time></p>
+<p class="summary">修复来源页切换状态时说明文字换行位置跳动的问题。</p><section class="other"><ul><li><strong>来源页布局稳定</strong>：状态药丸在「正在监听」与「已关闭」之间切换时，左侧说明文字不再重新换行。</li></ul></section>
+</div>
+</article>
+<article class="release" id="v2.0.5">
+<div class="i18n" lang="en">
+<div class="heading"><h2 class="version"><a href="#v2.0.5">Version 2.0.5</a></h2></div>
+<p class="meta">Build 6 · <time datetime="2026-09-06">September 6, 2026</time></p>
+<p class="summary">Adding an ignored app now uses a pop-up list, and the Settings window's buttons, switches and fields were tuned up.</p><section class="other"><ul><li><strong>Pop-up app picker</strong>: &quot;Add App&quot; opens a &quot;Running Applications&quot; list with app icons; apps already on the ignore list are checked and greyed out; move with ↑↓, confirm with Return, close with Esc; &quot;Choose from Finder…&quot; stays at the bottom. Rows now show the app name with its bundle identifier underneath.</li><li><strong>Consistent settings controls</strong>: inline buttons share one height and a hairline border, and short labels no longer shrink; buttons ease down slightly when pressed and stay still with Reduce Motion on.</li><li><strong>Redrawn switches</strong>: the on side uses the brand teal with a white knob, so the state reads at a glance in Dark Mode, and toggling animates.</li><li><strong>Details</strong>: secondary text is darker, field borders are clearer and thicken while focused, and panes open at the top when you switch.</li></ul></section>
+</div>
+<div class="i18n" lang="zh-Hans">
+<div class="heading"><h2 class="version"><a href="#v2.0.5">Version 2.0.5</a></h2></div>
+<p class="meta">Build 6 · <time datetime="2026-09-06">2026年9月6日</time></p>
+<p class="summary">忽略应用改为弹出列表选择，设置窗口的按钮、开关和输入框也统一了一遍。</p><section class="other"><ul><li><strong>添加忽略应用改为弹出列表</strong>：点「添加应用」直接弹出「运行中的应用程序」列表，带应用图标；已在忽略列表里的应用打勾置灰；↑↓ 选择、回车确认、Esc 关闭；底部保留「手动从访达中选择…」。列表行改为两行，名称下方显示 Bundle ID。</li><li><strong>设置控件统一</strong>：行内按钮改为同高的描边矩形，短文案不再缩成一小块；按下时有轻微缩放反馈，开启「减弱动态效果」后保持不动。</li><li><strong>开关重画</strong>：「开」的一侧用品牌青绿配白色旋钮，深色外观下开关状态一眼可辨，切换带过渡动画。</li><li><strong>细节</strong>：次级文字加深，输入框边框更清晰、聚焦时加粗，切换页面时回到页首。</li></ul></section>
+</div>
+</article>
+<article class="release" id="v2.0.4">
+<div class="i18n" lang="en">
+<div class="heading"><h2 class="version"><a href="#v2.0.4">Version 2.0.4</a></h2></div>
+<p class="meta">Build 5 · <time datetime="2026-09-04">September 4, 2026</time></p>
+<p class="summary">Quick Fill is here: one click types the code where you are, instead of switching back to press ⌘V.</p><section class="other"><ul><li><strong>Quick Fill next to the input field</strong>: for 60 seconds after a code arrives, a &quot;Fill 482913&quot; card floats next to the focused input field. One click types the code character by character, six-box code fields included. Off by default; turn it on under Settings › General. An optional &quot;Press Return after filling&quot; suits sign-in forms that submit right away.</li><li><strong>Guided Accessibility access</strong>: the same drag-in guide card as Full Disk Access — System Settings opens, the card flies alongside the window, you drag AutoCodeBar from the card into the list, and the card dismisses itself once the grant takes effect.</li><li><strong>Accessibility row on the Permissions page</strong>: listed next to Full Disk Access and Notifications, so the current state is visible at a glance.</li></ul></section>
+</div>
+<div class="i18n" lang="zh-Hans">
+<div class="heading"><h2 class="version"><a href="#v2.0.4">Version 2.0.4</a></h2></div>
+<p class="meta">Build 5 · <time datetime="2026-09-04">2026年9月4日</time></p>
+<p class="summary">新增「一键填入」：验证码到达后点一下就键入，不用再切回去 ⌘V。</p><section class="other"><ul><li><strong>在输入框旁一键填入</strong>：验证码到达后 60 秒内，光标所在的输入框旁会浮出一张「填入 482913」卡片，点一下逐字键入，六格分框的验证码也适用。默认关闭，在「设置 › 通用」里打开；另有「填入后自动按回车」可选，适合输入完即提交的登录框。</li><li><strong>辅助功能授权引导</strong>：与「完整磁盘访问」同款的拖拽卡片——打开系统设置后卡片飞到窗口旁，把里面的 AutoCodeBar 拖进列表即可，授权生效后卡片自动收起。</li><li><strong>权限页新增「辅助功能」状态行</strong>：和完整磁盘访问、通知并列，一眼看到当前是否已授权。</li></ul></section>
+</div>
+</article>
+<article class="release" id="v2.0.3">
+<div class="i18n" lang="en">
+<div class="heading"><h2 class="version"><a href="#v2.0.3">Version 2.0.3</a></h2></div>
+<p class="meta">Build 4 · <time datetime="2026-09-04">September 4, 2026</time></p>
+<p class="summary">The &quot;ignore these apps&quot; list for the Notification Center source is now an app picker.</p><section class="other"><ul><li><strong>Pick apps instead of typing bundle identifiers</strong>: the list shows app icons and names; &quot;Add App&quot; offers a &quot;Running Applications&quot; submenu and &quot;Choose from Finder…&quot; for any .app; each row can be removed individually, and the defaults can be restored with one click.</li></ul></section>
+</div>
+<div class="i18n" lang="zh-Hans">
+<div class="heading"><h2 class="version"><a href="#v2.0.3">Version 2.0.3</a></h2></div>
+<p class="meta">Build 4 · <time datetime="2026-09-04">2026年9月4日</time></p>
+<p class="summary">通知中心来源的「忽略这些应用」改为应用选择器。</p><section class="other"><ul><li><strong>按应用选择，不再手填 Bundle ID</strong>：列表直接显示应用图标与名称；点「添加应用」可从「运行中的应用程序」子菜单里选，或「手动从访达中选择…」任意 .app；每行可单独移除，也可一键恢复默认。</li></ul></section>
+</div>
+</article>
+<article class="release" id="v2.0.2">
+<div class="i18n" lang="en">
+<div class="heading"><h2 class="version"><a href="#v2.0.2">Version 2.0.2</a></h2></div>
+<p class="meta">Build 3 · <time datetime="2026-09-04">September 4, 2026</time></p>
+<p class="summary">The app identifier is now cc.zerah.AutoCodeBar, and personal information has been removed from logs and release notes.</p><section class="other"><ul><li><strong>New app identifier</strong>: macOS treats this as a new app. After the first launch, add AutoCodeBar again under Privacy &amp; Security › Full Disk Access; the guide card in the panel walks you through it.</li><li><strong>Upgrading from 2.0.1</strong>: the in-app updater cannot install across identifiers. Run <code>brew upgrade --cask autocodebar</code> or install the new DMG over the old app. Settings need to be configured once more.</li><li><strong>Logging</strong>: the log subsystem and internal queue names no longer contain personal information.</li></ul></section>
+</div>
+<div class="i18n" lang="zh-Hans">
+<div class="heading"><h2 class="version"><a href="#v2.0.2">Version 2.0.2</a></h2></div>
+<p class="meta">Build 3 · <time datetime="2026-09-04">2026年9月4日</time></p>
+<p class="summary">应用标识改为 cc.zerah.AutoCodeBar，并去掉日志与说明里的个人信息。</p><section class="other"><ul><li><strong>新的应用标识</strong>：macOS 会把它视为一个新应用，首次启动后请在「隐私与安全性 › 完整磁盘访问」重新加入 AutoCodeBar，面板里的引导卡片会带你完成。</li><li><strong>从 2.0.1 升级</strong>：应用内更新无法跨标识安装，请执行 <code>brew upgrade --cask autocodebar</code>，或下载新的 DMG 覆盖安装。设置需要重新配置一次。</li><li><strong>日志</strong>：日志子系统与内部队列名不再包含个人信息。</li></ul></section>
+</div>
+</article>
+<article class="release" id="v2.0.1">
+<div class="i18n" lang="en">
+<div class="heading"><h2 class="version"><a href="#v2.0.1">Version 2.0.1</a></h2></div>
+<p class="meta">Build 2 · <time datetime="2026-09-04">September 4, 2026</time></p>
+<p class="summary">Fixes the SMS and Notification Center sources frequently missing new messages.</p><section class="other"><ul><li><strong>No more missed messages</strong>: macOS emits no file system events when its daemons write the Messages database or the notification database, so a watcher that relied on file events alone could wait forever. The sources now compare the modification time and size of each database and its WAL once a second and read only when something changed. Latency stays under a second at negligible cost.</li><li><strong>Earlier trigger</strong>: Messages usually updates its nickname cache when a message arrives; those events now also trigger a read.</li><li><strong>Clearer logging</strong>: the SMS source records rows read and skip reasons for troubleshooting.</li></ul></section>
+</div>
+<div class="i18n" lang="zh-Hans">
+<div class="heading"><h2 class="version"><a href="#v2.0.1">Version 2.0.1</a></h2></div>
+<p class="meta">Build 2 · <time datetime="2026-09-04">2026年9月4日</time></p>
+<p class="summary">修复短信与通知中心来源经常收不到新消息的问题。</p><section class="other"><ul><li><strong>短信与通知中心不再漏消息</strong>：macOS 在系统守护进程写入「信息」数据库和通知数据库时不会产生文件系统事件，之前只依赖文件事件的监听会一直等不到新消息。现在每秒比对一次数据库与 WAL 文件的修改时间和大小，有变化才读取，延迟不超过一秒，开销可以忽略。</li><li><strong>更快的提前触发</strong>：收到新短信时「信息」通常会顺带更新昵称缓存，这类事件现在也会触发一次读取。</li><li><strong>更清楚的日志</strong>：短信来源会记录每次读取到的行数与跳过原因，方便排查。</li></ul></section>
+</div>
+</article>
+<article class="release" id="v2.0.0">
+<div class="i18n" lang="en">
+<div class="heading"><h2 class="version"><a href="#v2.0.0">Version 2.0.0</a></h2></div>
+<p class="meta">Build 1 · <time datetime="2026-09-04">September 4, 2026</time></p>
+<p class="summary">2.0 is a complete rewrite.</p><section class="other"><ul><li><strong>Monitoring starts with the app</strong>: no need to open the panel first; a manual pause is no longer undone by the panel; each source starts, fails and recovers on its own.</li><li><strong>Three sources</strong>: SMS and iMessage from Messages, local mail from Apple Mail, and an experimental Notification Center source (off by default) that can also cover iPhone Mirroring and other apps.</li><li><strong>Scored extraction</strong>: candidates are ranked by keyword proximity, shape, line position and surrounding context, so years, amounts, order numbers and card suffixes are rejected. Keywords and the pattern are editable with a live test field.</li><li><strong>Menu bar and notifications</strong>: a recognised code is copied immediately, shown in the menu bar for 15 seconds, and optionally announced by a banner. The panel keeps the last five and re-copies on hover.</li><li><strong>Permission guidance</strong>: a three-step setup flow, plus a Full Disk Access card that flies to the System Settings window, follows it, and hands you a draggable copy of the app icon for the permission list.</li><li><strong>Privacy</strong>: history lives in memory only, capped at 20 entries and cleared on quit; codes are written to the pasteboard with the concealed-content marker; nothing is sent anywhere except the update check.</li><li><strong>Secure distribution</strong>: Developer ID signing, Apple notarization and an EdDSA-signed Sparkle update feed.</li></ul></section>
+</div>
+<div class="i18n" lang="zh-Hans">
+<div class="heading"><h2 class="version"><a href="#v2.0.0">Version 2.0.0</a></h2></div>
+<p class="meta">Build 1 · <time datetime="2026-09-04">2026年9月4日</time></p>
+<p class="summary">2.0 是一次全新重写。</p><section class="other"><ul><li><strong>启动即监听</strong>：不再需要先点开面板；暂停不会被面板刷新撕掉；三个来源各自独立启停、独立恢复。</li><li><strong>三个数据来源</strong>：「信息」的短信与 iMessage、Apple Mail 的本地邮件，以及实验性的通知中心来源（默认关闭，可覆盖 iPhone 镜像等其他应用的通知）。</li><li><strong>打分式识别</strong>：按关键词邻近度、字形、行位置和上下文挑出验证码，年份、金额、单号、尾号都会被排除；关键词与正则可在设置里修改，并带实时测试框。</li><li><strong>菜单栏与通知</strong>：识别到验证码即复制，菜单栏显示 15 秒，可选系统通知；面板保留最近 5 条，悬停即可再次复制。</li><li><strong>权限引导</strong>：三步引导流程；「完整磁盘访问」提供一张会飞到系统设置窗口并跟随的引导卡片，把应用图标拖进权限列表即可。</li><li><strong>隐私</strong>：历史只在内存中，最多 20 条，退出即清；验证码写入剪贴板时带机密标记；除更新检查外没有任何网络请求。</li><li><strong>安全分发</strong>：Developer ID 签名、Apple 公证与 Sparkle 签名更新源。</li></ul></section>
+</div>
+</article>
 
-      @media (prefers-color-scheme: dark) {
-        :root {
-          --background: #101113;
-          --ink: #f4f4f5;
-          --text: #d7d7db;
-          --muted: #9898a1;
-          --line: #333338;
-          --soft: #232327;
-          --accent: #54d6c8;
-        }
-      }
-
-      * { box-sizing: border-box; }
-
-      body {
-        margin: 0;
-        background: var(--background);
-        color: var(--text);
-        font: 16px/1.7 -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", sans-serif;
-        -webkit-font-smoothing: antialiased;
-      }
-
-      a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 4px; }
-      a:hover { color: var(--accent); }
-      :focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
-
-      header,
-      main,
-      footer {
-        width: min(720px, calc(100% - 44px));
-        margin-inline: auto;
-      }
-
-      header {
-        display: flex;
-        justify-content: space-between;
-        align-items: baseline;
-        padding-block: 24px;
-      }
-
-      .brand {
-        color: var(--ink);
-        font-size: 20px;
-        font-weight: 700;
-        letter-spacing: -0.03em;
-        text-decoration: none;
-      }
-
-      .back { color: var(--muted); font-size: 14px; }
-      main { padding-block: 48px 72px; }
-      h1, h2, h3 { color: var(--ink); }
-
-      h1 {
-        margin: 0;
-        font-size: clamp(42px, 9vw, 64px);
-        line-height: 1.05;
-        letter-spacing: -0.055em;
-      }
-
-      .intro { margin: 18px 0 56px; color: var(--muted); font-size: 18px; }
-      .release { padding-block: 38px 42px; border-top: 1px solid var(--line); }
-
-      .release-heading {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: baseline;
-        gap: 10px 14px;
-      }
-
-      .release h2 {
-        margin: 0;
-        font-size: 29px;
-        line-height: 1.2;
-        letter-spacing: -0.035em;
-      }
-
-      .current {
-        padding: 2px 9px;
-        border-radius: 999px;
-        background: var(--accent);
-        color: var(--background);
-        font-size: 12px;
-        font-weight: 700;
-      }
-
-      .meta { margin: 8px 0 22px; color: var(--muted); font-size: 14px; }
-      .notes > :first-child { margin-top: 0; }
-      .notes > :last-child { margin-bottom: 0; }
-      .notes p { margin: 0 0 15px; }
-      .notes h3 { margin: 26px 0 10px; font-size: 19px; letter-spacing: -0.02em; }
-      .notes ul, .notes ol { margin: 0; padding-left: 1.35em; }
-      .notes li { margin: 8px 0; padding-left: 0.2em; }
-
-      code {
-        padding: 1px 4px;
-        border: 1px solid var(--line);
-        border-radius: 4px;
-        background: var(--soft);
-        font: 0.86em/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
-        overflow-wrap: anywhere;
-      }
-
-      .load-error { color: var(--muted); }
-
-      footer {
-        padding-block: 22px 42px;
-        border-top: 1px solid var(--line);
-        color: var(--muted);
-        font-size: 14px;
-      }
-
-      @media (max-width: 520px) {
-        main { padding-top: 34px; }
-        .intro { margin-bottom: 42px; }
-        .release { padding-block: 30px 34px; }
-        .release h2 { font-size: 26px; }
-      }
-    </style>
-  </head>
-  <body>
-    <header>
-      <a class="brand" href="./">AutoCodeBar</a>
-      <a class="back" href="./">返回首页</a>
-    </header>
-
-    <main>
-      <h1>版本历史</h1>
-      <p class="intro">AutoCodeBar 每个版本的主要变化。</p>
-      <div id="releases">正在载入更新记录…</div>
-      <noscript><p>请前往 <a href="https://github.com/qzz0518/AutoCodeBar/releases">GitHub Releases</a> 查看更新记录。</p></noscript>
-    </main>
-
-    <footer><a href="https://github.com/qzz0518/AutoCodeBar/releases">AutoCodeBar Releases on GitHub</a></footer>
-
-    <script>
-      const releases = [
-        { version: '2.0.6', date: '2026-09-06', current: true },
-        { version: '2.0.5', date: '2026-09-06' },
-        { version: '2.0.4', date: '2026-09-04' },
-        { version: '2.0.3', date: '2026-09-04' },
-        { version: '2.0.2', date: '2026-09-04' },
-        { version: '2.0.1', date: '2026-09-04' },
-        { version: '2.0.0', date: '2026-09-04' }
-      ];
-
-      const escapeHTML = (value) => value.replace(/[&<>"']/g, (character) => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-      })[character]);
-
-      const inlineMarkdown = (value) => escapeHTML(value)
-        .replace(/`([^`]+)`/g, '<code>$1</code>')
-        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-        .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2">$1</a>');
-
-      const cleanNotes = (source) => source
-        .replace(/<!-- sparkle-sign-warning:[\s\S]*?-->/, '')
-        .replace(/^# AutoCodeBar[^\n]*\n+/, '')
-        .trim();
-
-      const renderMarkdown = (source) => {
-        const lines = cleanNotes(source).split(/\r?\n/);
-        let html = '';
-        let list = '';
-        const closeList = () => { if (list) html += `</${list}>`; list = ''; };
-
-        for (const rawLine of lines) {
-          const line = rawLine.trim();
-          if (!line) { closeList(); continue; }
-          const heading = line.match(/^#{1,6}\s+(.+)$/);
-          if (heading) { closeList(); html += `<h3>${inlineMarkdown(heading[1])}</h3>`; continue; }
-          const ordered = line.match(/^\d+\.\s+(.+)$/);
-          const unordered = line.match(/^[-*]\s+(.+)$/);
-          const item = ordered || unordered;
-          if (item) {
-            const nextList = ordered ? 'ol' : 'ul';
-            if (list !== nextList) { closeList(); list = nextList; html += `<${list}>`; }
-            html += `<li>${inlineMarkdown(item[1])}</li>`;
-            continue;
-          }
-          closeList();
-          html += `<p>${inlineMarkdown(line)}</p>`;
-        }
-        closeList();
-        return html;
-      };
-
-      const dateLabel = (value) => {
-        const [year, month, day] = value.split('-').map(Number);
-        return `${year}年${month}月${day}日`;
-      };
-
-      Promise.all(releases.map(async (release) => {
-        const file = `AutoCodeBar-${release.version}.zh.md`;
-        try {
-          const response = await fetch(file);
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
-          const notes = renderMarkdown(await response.text());
-          return `<article class="release">
-            <div class="release-heading"><h2>Version ${release.version}</h2>${release.current ? '<span class="current">当前版本</span>' : ''}</div>
-            <div class="meta"><time datetime="${release.date}">${dateLabel(release.date)}</time></div>
-            <div class="notes">${notes}</div>
-          </article>`;
-        } catch (_) {
-          return `<article class="release">
-            <div class="release-heading"><h2>Version ${release.version}</h2></div>
-            <div class="meta"><time datetime="${release.date}">${dateLabel(release.date)}</time></div>
-            <p class="load-error">此版本说明暂时无法载入。</p>
-          </article>`;
-        }
-      })).then((articles) => { document.querySelector('#releases').innerHTML = articles.join(''); });
-    </script>
-  </body>
+</main>
+<footer><a href="https://github.com/qzz0518/AutoCodeBar/releases">GitHub Releases</a></footer>
+</div>
+</body>
 </html>

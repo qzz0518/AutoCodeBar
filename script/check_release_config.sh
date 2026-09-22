@@ -65,9 +65,9 @@ if [ "$DMG_WIDTH" != "1520" ] || [ "$DMG_HEIGHT" != "1040" ]; then
 	exit 1
 fi
 
-# Sparkle renders the release notes as Markdown in safe mode: inline HTML is
-# shown literally, so the notes served from site/ must stay plain Markdown.
-for NOTES in "$ROOT"/site/AutoCodeBar-*.md; do
+# script/release_notes.swift escapes inline HTML, so tags in the release notes
+# would show literally; the sources must stay plain Markdown.
+for NOTES in "$ROOT"/Resources/ReleaseNotes/*.md; do
 	[ -f "$NOTES" ] || continue
 	if grep -Eq '<(p|img|h[1-6]|div|span|br|a|table|center)[ >/]' "$NOTES"; then
 		echo "release notes must not contain HTML tags: $NOTES" >&2
